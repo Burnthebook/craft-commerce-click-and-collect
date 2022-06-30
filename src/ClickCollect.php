@@ -17,6 +17,7 @@ use yii\base\Event;
 use craft\base\Plugin;
 use craft\commerce\services\ShippingMethods;
 use burnthebook\ClickCollect\Models\Settings;
+use burnthebook\ClickCollect\Services\ClickAndCollectService;
 use craft\commerce\events\RegisterAvailableShippingMethodsEvent;
 
 /**
@@ -96,7 +97,7 @@ class ClickCollect extends Plugin
             ShippingMethods::class,
             ShippingMethods::EVENT_REGISTER_AVAILABLE_SHIPPING_METHODS,
             function(RegisterAvailableShippingMethodsEvent $event) {
-                $event->shippingMethods[] = new MyShippingMethod();
+                $event->shippingMethods[] = new ClickAndCollectService();
             }
         );
     }
