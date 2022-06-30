@@ -1,0 +1,28 @@
+{#
+/**
+ * Click and Collect plugin for Craft CMS 4.x
+ *
+ * Add drop in Click and Collect functionality to Craft Commerce.
+ *
+ * @link        https://burnthebook.co.uk
+ * @author      Michael Burton <mikey@burnthebook.co.uk>
+ * @since       0.0.1
+ * @copyright   Copyright (c) 2022 burnthebook
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+<div id="general">
+    {% namespace "settings" %}
+
+        {{ forms.textField({
+            label: "Plugin name"|t("craft-commerce-click-and-collect"),
+            instructions: "The public-facing name of the plugin"|t("craft-commerce-click-and-collect"),
+            id: "pluginName",
+            name: "pluginName",
+            value: settings.pluginName,
+        }) }}
+
+    {% endnamespace %}
+</div>
