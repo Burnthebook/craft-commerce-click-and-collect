@@ -118,7 +118,7 @@ class ClickAndCollectService extends Component
     public function getPriceForOrder(Order $order): float
     {
         // @todo
-        return 0;
+        return 9999;
     }
 
     /**
