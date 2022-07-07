@@ -1,0 +1,37 @@
+{% extends parentLayout ?? '_layouts/cp' %}
+
+{% if title is not defined %}
+    {% set title = craft.clickcollect.getPluginName() | t(craft.clickcollect.getPluginHandle()) %}
+{% endif %}
+
+{% set content %}
+
+    {% block blockContent %}
+
+    {% endblock %}
+
+    <hr>
+    <ul style="margin:0;display:flex;align-items:center;justify-content:center;">
+        <li>
+            <a href="#" style="margin: 10px;">
+                Purchase License
+            </a>
+        </li>
+        <li>
+            &middot;
+        </li>
+        <li>
+            <a href="#" style="margin: 10px;">
+                Support
+            </a>
+        </li>
+        <li>
+            &middot;
+        </li>
+        <li>
+            <a href="#" style="margin: 10px;">
+                <span>Made with <span style="color: #e25555;">&#9829;</span> by Burnthebook</span>
+            </a>
+        </li>
+    </ul>
+{% endset %}

@@ -14,15 +14,11 @@
 {% import "_includes/forms" as forms %}
 
 <div id="general">
-    {% namespace "settings" %}
-
-        {{ forms.textField({
-            label: "Plugin name"|t("craft-commerce-click-and-collect"),
-            instructions: "The public-facing name of the plugin"|t("craft-commerce-click-and-collect"),
-            id: "pluginName",
-            name: "pluginName",
-            value: settings.pluginName,
-        }) }}
-
-    {% endnamespace %}
+    {{ forms.textField({
+        label: "Plugin name"|t(craft.clickcollect.getPluginHandle()),
+        instructions: "The public-facing name of the plugin"|t("craft-commerce-click-and-collect"),
+        id: "pluginName",
+        name: "pluginName",
+        value: settings.pluginName,
+    }) }}
 </div>

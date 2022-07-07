@@ -6,41 +6,16 @@ use DateTime;
 use yii\base\Event;
 use yii\base\Component;
 use craft\commerce\elements\Order;
+use burnthebook\ClickCollect\ClickCollect;
 use craft\commerce\base\ShippingRuleInterface;
+use craft\commerce\base\ShippingMethodInterface;
 
-class ClickAndCollectService extends Component
+class ClickAndCollectService extends Component implements ShippingMethodInterface
 {
-    /**
-     * @var int|null ID
-     */
-    public ?int $id = null;
-
-    /**
-     * @var string|null Name
-     */
-    public ?string $name = null;
-
-    /**
-     * @var string|null Handle
-     */
-    public ?string $handle = null;
-
     /**
      * @var bool Enabled
      */
     public bool $enabled = true;
-
-    /**
-     * @var DateTime|null
-     * @since 3.4
-     */
-    public ?DateTime $dateCreated = null;
-
-    /**
-     * @var DateTime|null
-     * @since 3.4
-     */
-    public ?DateTime $dateUpdated = null;
 
     /**
      * @var bool Is this the shipping method for the lite edition.
@@ -72,8 +47,7 @@ class ClickAndCollectService extends Component
      */
     public function getName(): string
     {
-        // @todo - pull from settings
-        return 'Click & Collect';
+        return ClickCollect::$plugin->getShippingMethod()->getName();
     }
 
     /**
@@ -81,8 +55,7 @@ class ClickAndCollectService extends Component
      */
     public function getHandle(): string
     {
-        // @todo - pull from settings
-        return 'craft-commerce-click-and-collect';
+        return ClickCollect::$plugin->getPluginHandle();
     }
 
     /**
@@ -91,8 +64,7 @@ class ClickAndCollectService extends Component
      */
     public function getCpEditUrl(): string
     {
-        // @todo - edit page
-        return '';
+        return ClickCollect::$plugin->getShippingMethod()->getCpEditUrl();
     }
 
     /**
@@ -111,14 +83,22 @@ class ClickAndCollectService extends Component
      */
     public function getIsEnabled(): bool
     {
-        // @todo - setting
-        return true;
+        return ClickCollect::$plugin->getShippingMethod()->getIsEnabled();
+    }
+
+    public function getDateCreated(): DateTime
+    {
+        return new DateTime("2022-07-01 00:00:00");
+    }
+
+    public function getDateUpdated(): DateTime
+    {
+        return new DateTime("2022-07-01 00:00:00");
     }
 
     public function getPriceForOrder(Order $order): float
     {
-        // @todo
-        return 9999;
+        return ClickCollect::$plugin->getShippingMethod()->getPrice();
     }
 
     /**

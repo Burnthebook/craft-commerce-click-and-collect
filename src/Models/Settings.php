@@ -34,8 +34,8 @@ class Settings extends Model
     public function rules(): array
     {
         return [
-            ['pluginName', 'string'],
-            ['pluginName', 'default', 'value' => 'Click & Collect'],
+            [['pluginName'], 'required'],
+
         ];
     }
 

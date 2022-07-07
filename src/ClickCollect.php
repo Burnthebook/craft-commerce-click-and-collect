@@ -15,8 +15,11 @@ namespace burnthebook\ClickCollect;
 use Craft;
 use yii\base\Event;
 use craft\base\Plugin;
+use craft\web\twig\variables\CraftVariable;
 use craft\commerce\services\ShippingMethods;
 use burnthebook\ClickCollect\Models\Settings;
+use burnthebook\ClickCollect\Models\ShippingMethod;
+use burnthebook\ClickCollect\Variables\ClickCollectVariable;
 use burnthebook\ClickCollect\Services\ClickAndCollectService;
 use craft\commerce\events\RegisterAvailableShippingMethodsEvent;
 
@@ -55,6 +58,16 @@ class ClickCollect extends Plugin
     /**
      * @inheritdoc
      */
+    public bool $hasCpSettings = true;
+
+    /**
+     * @inheritdoc
+     */
+    public bool $hasCpSection = true;
+
+    /**
+     * @inheritdoc
+     */
     public static function editions(): array
     {
         return [
@@ -63,23 +76,20 @@ class ClickCollect extends Plugin
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public bool $hasCpSettings = true;
-
-    /**
-     * @inheritdoc
-     */
-    public bool $hasCpSection = true;
 
     public function init()
     {
         parent::init();
         self::$plugin = $this;
         self::$settings = self::$plugin->getSettings();
+
+        // $this->setComponents([
+        //     'shippingMethod' => ClickAndCollectService::class
+        // ]);
+
         $this->name = self::$settings->pluginName;
         $this->registerShippingMethod();
+        $this->_registerVariables();
 
         // We're loaded
         Craft::info(
@@ -90,6 +100,16 @@ class ClickCollect extends Plugin
             ),
             __METHOD__
         );
+    }
+
+    public function getPluginHandle()
+    {
+        return self::PLUGIN_HANDLE;
+    }
+
+    public function getPluginName()
+    {
+        return Craft::t(self::PLUGIN_HANDLE, $this->getSettings()->pluginName);
     }
 
     public function registerShippingMethod() {
@@ -113,35 +133,51 @@ class ClickCollect extends Plugin
     /**
      * @inheritdoc
      */
-    public function getSettings(): ?Settings
-    {
-        $settingsModel = parent::getSettings();
-        if ($settingsModel !== null && !self::$savingSettings) {
-            $attributes = $settingsModel->attributes();
-            if ($attributes !== null) {
-                foreach ($attributes as $attribute) {
-                    if (is_string($settingsModel->$attribute)) {
-                        $settingsModel->$attribute = html_entity_decode(
-                            $settingsModel->$attribute,
-                            ENT_NOQUOTES,
-                            'UTF-8'
-                        );
-                    }
-                }
-            }
-            self::$savingSettings = false;
-        }
-        
-        return $settingsModel;
-    }
-
     protected function settingsHtml(): null|string
     {
-        return \Craft::$app->getView()->renderTemplate(
+        return Craft::$app->getView()->renderTemplate(
             self::PLUGIN_HANDLE . '/settings',
             [
                 'settings' => $this->getSettings() 
             ]
         );
+    }
+
+    public function getCpNavItem() : ?array
+    {
+        $item = parent::getCpNavItem();
+        // $item['badgeCount'] = 5;
+        $item['subnav'] = [
+            'dashboard' => [
+                'label' => 'Dashboard', 
+                'url' => self::PLUGIN_HANDLE . '/dashboard'
+            ],
+            'shipping-method' => [
+                'label' => 'Shipping Method', 
+                'url' => self::PLUGIN_HANDLE . '/shipping-method'
+            ],
+            'collection-points' => [
+                'label' => 'Collection Points', 
+                'url' => self::PLUGIN_HANDLE . '/collection-points'
+            ],
+            'settings' => [
+                'label' => 'Settings', 
+                'url' => 'settings/plugins/' . self::PLUGIN_HANDLE
+            ],
+        ];
+        return $item;
+    }
+
+    private function _registerVariables()
+    {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+            $event->sender->set('clickcollect', ClickCollectVariable::class);
+        });
+    }
+
+    public function getShippingMethod()
+    {
+        $shippingModel = new ShippingMethod;
+        return $shippingModel;
     }
 }

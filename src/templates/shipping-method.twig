@@ -1,0 +1,55 @@
+{#
+/**
+ * Click and Collect plugin for Craft CMS 4.x
+ *
+ * Add drop in Click and Collect functionality to Craft Commerce.
+ *
+ * @link        https://burnthebook.co.uk
+ * @author      Michael Burton <mikey@burnthebook.co.uk>
+ * @since       0.0.1
+ * @copyright   Copyright (c) 2022 burnthebook
+ */
+#}
+{% extends 'craft-commerce-click-and-collect/_layouts' %}
+
+{% set selectedSubnavItem = 'shipping-method' %}
+{% set saveUrl = craft.clickcollect.getPluginHandle() ~ '/shipping-method/save' %}
+{% set redirectUrl = craft.clickcollect.getPluginHandle() ~ '/shipping-method' %}
+
+{% set title = "Click & Collect - Shipping Method"|t(craft.clickcollect.getPluginHandle()) %}
+
+{% import '_includes/forms' as forms %}
+{% set fullPageForm = true %}
+
+{% block blockContent %}
+    {{ actionInput(saveUrl) }}
+    {{ redirectInput(redirectUrl) }}
+
+    {{
+        forms.lightswitch({
+            label: "Shipping Method Enabled?"|t(craft.clickcollect.getPluginHandle()),
+            instructions: "Is the shipping method enabled?"|t(craft.clickcollect.getPluginHandle()),
+            id: "shippingMethodEnabled",
+            name: "shippingMethodEnabled",
+        }) 
+    }}
+
+    {{
+        forms.textField({
+            label: "Shipping Method Name"|t(craft.clickcollect.getPluginHandle()),
+            instructions: "The public-facing name of the plugin"|t(craft.clickcollect.getPluginHandle()),
+            id: "shippingMethodName",
+            name: "shippingMethodName",
+        }) 
+    }}
+
+    {{
+        forms.textField({
+            label: "Shipping Method Price"|t(craft.clickcollect.getPluginHandle()),
+            instructions: "How much should this shipping method charge the end user? Useful for deposits etc."|t(craft.clickcollect.getPluginHandle()),
+            id: "shippingMethodPrice",
+            name: "shippingMethodPrice",
+        }) 
+    }}
+
+{% endblock %}
