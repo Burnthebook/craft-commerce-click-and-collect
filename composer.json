@@ -2,7 +2,7 @@
     "name": "burnthebook/craft-commerce-click-and-collect",
     "description": "Add drop in Click and Collect functionality to Craft Commerce.",
     "type": "craft-plugin",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "keywords": [
         "craft",
         "cms",
@@ -22,7 +22,7 @@
       "email": "support@burnthebook.co.uk",
       "issues": "https://github.com/burnthebook/craft-commerce-click-and-collect/issues?state=open",
       "source": "https://github.com/burnthebook/craft-commerce-click-and-collect",
-      "docs": "https://github.com/burnthebook/craft-commerce-click-and-collect/blob/master/README.md"
+      "docs": "https://github.com/burnthebook/craft-commerce-click-and-collect/blob/main/README.md"
     },
     "require": {
       "craftcms/cms": "^4.0.0",
@@ -38,7 +38,7 @@
       "handle": "craft-commerce-click-and-collect",
       "hasCpSettings": true,
       "hasCpSection": true,
-      "changelogUrl": "https://github.com/burnthebook/craft-commerce-click-and-collect/blob/master/CHANGELOG.md",
+      "changelogUrl": "https://github.com/burnthebook/craft-commerce-click-and-collect/blob/main/CHANGELOG.md",
       "components": {},
       "class": "burnthebook\\ClickCollect\\ClickCollect"
     }
