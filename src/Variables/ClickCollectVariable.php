@@ -5,13 +5,8 @@ use burnthebook\ClickCollect\ClickCollect;
 
 class ClickCollectVariable
 {
-    public function getPluginName()
+    public function __call($name, $arguments)
     {
-        return ClickCollect::$plugin->getPluginName();
-    }
-
-    public function getPluginHandle()
-    {
-        return ClickCollect::$plugin->getPluginHandle();
+        return ClickCollect::$plugin->$name($arguments);
     }
 }

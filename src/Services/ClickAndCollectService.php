@@ -47,7 +47,7 @@ class ClickAndCollectService extends Component implements ShippingMethodInterfac
      */
     public function getName(): string
     {
-        return ClickCollect::$plugin->getShippingMethod()->getName();
+        return ClickCollect::$plugin->getShippingMethodModel()->getName();
     }
 
     /**
@@ -64,7 +64,7 @@ class ClickAndCollectService extends Component implements ShippingMethodInterfac
      */
     public function getCpEditUrl(): string
     {
-        return ClickCollect::$plugin->getShippingMethod()->getCpEditUrl();
+        return ClickCollect::$plugin->getShippingMethodModel()->getCpEditUrl();
     }
 
     /**
@@ -83,7 +83,7 @@ class ClickAndCollectService extends Component implements ShippingMethodInterfac
      */
     public function getIsEnabled(): bool
     {
-        return ClickCollect::$plugin->getShippingMethod()->getIsEnabled();
+        return ClickCollect::$plugin->getShippingMethodModel()->getIsEnabled();
     }
 
     public function getDateCreated(): DateTime
@@ -98,7 +98,7 @@ class ClickAndCollectService extends Component implements ShippingMethodInterfac
 
     public function getPriceForOrder(Order $order): float
     {
-        return ClickCollect::$plugin->getShippingMethod()->getPrice();
+        return ClickCollect::$plugin->getShippingMethodModel()->getPrice();
     }
 
     /**

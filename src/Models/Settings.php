@@ -35,7 +35,6 @@ class Settings extends Model
     {
         return [
             [['pluginName'], 'required'],
-
         ];
     }
 

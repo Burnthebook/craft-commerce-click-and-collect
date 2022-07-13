@@ -13,9 +13,10 @@
 namespace burnthebook\ClickCollect\Models;
 
 use craft\base\Model;
+use burnthebook\ClickCollect\Records\ShippingMethod as ShippingMethodRecord;
 
 /**
- * Plugin settings object, containing values for configuring the plugin
+ * Shipping Method model
  *
  * @author    burnthebook
  * @package   ClickCollect
@@ -74,21 +75,48 @@ class ShippingMethod extends Model
 
     public function getName() : string
     {
-        return $this->shippingMethodName;
+        return static::fetch()->name ?? $this->shippingMethodName;
     }
 
     public function getIsEnabled() : bool
     {
-        return $this->shippingMethodEnabled;
+        return static::fetch()->active ?? $this->shippingMethodEnabled;
     }
 
     public function getPrice() : int
     {
-        return $this->shippingMethodPrice;
+        return static::fetch()->price ?? $this->shippingMethodPrice;
     }
 
     public function getCpEditUrl() : string
     {
         return $this->shippingMethodCpEditUrl;
+    }
+
+    // Model helper methods
+
+    public static function exists() : bool
+    {
+        return (bool) ShippingMethodRecord::find()->orderBy(['id' => SORT_ASC])->one();
+    }
+
+    /** 
+     * Fetch method on model returns an ActiveRecord class, so model can be used as ActiveRecord
+     * 
+     * @return burnthebook\ClickCollect\Records\ShippingMethod
+     */
+    public static function fetch() : ShippingMethodRecord
+    {
+        return ShippingMethodRecord::find()->orderBy(['id' => SORT_ASC])->one();
+    }
+
+    public static function fetchById(int $id) : ShippingMethodRecord
+    {
+        return ShippingMethodRecord::find()->where(['id' => $id])->orderBy(['id' => SORT_ASC])->one();
+    }
+
+    public static function create() : ShippingMethodRecord
+    {
+        return new ShippingMethodRecord;
     }
 }

@@ -13,8 +13,9 @@
 {% extends 'craft-commerce-click-and-collect/_layouts' %}
 
 {% set selectedSubnavItem = 'shipping-method' %}
-{% set saveUrl = craft.clickcollect.getPluginHandle() ~ '/shipping-method/save' %}
+{% set saveUrl = craft.clickcollect.getPluginHandle() ~ '/shipping-method/save-settings' %}
 {% set redirectUrl = craft.clickcollect.getPluginHandle() ~ '/shipping-method' %}
+{% set shippingMethod = craft.clickcollect.getShippingMethodRecord() %}
 
 {% set title = "Click & Collect - Shipping Method"|t(craft.clickcollect.getPluginHandle()) %}
 
@@ -31,6 +32,7 @@
             instructions: "Is the shipping method enabled?"|t(craft.clickcollect.getPluginHandle()),
             id: "shippingMethodEnabled",
             name: "shippingMethodEnabled",
+            on: shippingMethod.active
         }) 
     }}
 
@@ -40,6 +42,7 @@
             instructions: "The public-facing name of the plugin"|t(craft.clickcollect.getPluginHandle()),
             id: "shippingMethodName",
             name: "shippingMethodName",
+            value: shippingMethod.name
         }) 
     }}
 
@@ -49,6 +52,7 @@
             instructions: "How much should this shipping method charge the end user? Useful for deposits etc."|t(craft.clickcollect.getPluginHandle()),
             id: "shippingMethodPrice",
             name: "shippingMethodPrice",
+            value: shippingMethod.price
         }) 
     }}
 

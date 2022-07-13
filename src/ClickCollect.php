@@ -83,6 +83,12 @@ class ClickCollect extends Plugin
         self::$plugin = $this;
         self::$settings = self::$plugin->getSettings();
 
+        // Set the controllerNamespace based on whether this is a console or web request
+        if (Craft::$app->getRequest()->getIsConsoleRequest()) {
+            $this->controllerNamespace = 'burnthebook\\ClickCollect\\Console\\Controllers';
+        } else {
+            $this->controllerNamespace = 'burnthebook\\ClickCollect\\Controllers';
+        }
         // $this->setComponents([
         //     'shippingMethod' => ClickAndCollectService::class
         // ]);
@@ -175,9 +181,14 @@ class ClickCollect extends Plugin
         });
     }
 
-    public function getShippingMethod()
+    public function getShippingMethodModel()
     {
-        $shippingModel = new ShippingMethod;
-        return $shippingModel;
+        return new ShippingMethod;
+    }
+
+
+    public function getShippingMethodRecord()
+    {
+        return ShippingMethod::fetch();
     }
 }

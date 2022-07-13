@@ -35,3 +35,7 @@ Click & Collect for Craft Commerce works on Craft 4.x and Craft Commerce 4.0.0
 ## Roadmap
 
 ## Contributing
+
+## Thanks
+
+#extending-craft channel in the Craft CMS Discord

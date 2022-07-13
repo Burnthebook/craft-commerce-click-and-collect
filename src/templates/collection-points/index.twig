@@ -15,6 +15,7 @@
 {% set selectedSubnavItem = 'collection-points' %}
 
 {% set title = "Click & Collect - Collection Points"|t(craft.clickcollect.getPluginHandle()) %}
+{% set collectionPoints = craft.clickcollect.getCollectionPoints() %}
 
 {% import '_includes/forms' as forms %}
 
