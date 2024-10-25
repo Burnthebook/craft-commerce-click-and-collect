@@ -1,0 +1,78 @@
+{#
+/**
+ * Click and Collect plugin for Craft CMS 4.x
+ *
+ * Add drop in Click and Collect functionality to Craft Commerce.
+ *
+ * @link        https://burnthebook.co.uk
+ * @author      Michael Burton <mikey@burnthebook.co.uk>
+ * @since       0.0.1
+ * @copyright   Copyright (c) 2022 burnthebook
+ */
+#}
+{% extends "_layouts/cp" %}
+{% import '_includes/forms.twig' as forms %}
+
+{% set title = "Collection Points" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<p><a href="{{ url('craft-commerce-click-and-collect/collection-points/new') }}" class="btn submit">New Collection Point</a></p>
+
+<table class="data fullwidth">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Postcode</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for point in collectionPoints %}
+        <tr>
+            <td>{{ point.name }}</td>
+            <td>{{ point.address }}</td>
+            <td>{{ point.postcode }}</td>
+            <td>
+                <a href="{{ url('craft-commerce-click-and-collect/collection-points/edit/' ~ point.id) }}">Edit</a> |
+                <a href="{{ url('craft-commerce-click-and-collect/collection-points/delete/' ~ point.id) }}" class="delete">Delete</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No collection points found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+
+{% block footer %}
+    <hr>
+    <ul style="margin:0;display:flex;align-items:center;justify-content:center;">
+        <li>
+            <a href="#" style="margin: 10px;">
+                Purchase License
+            </a>
+        </li>
+        <li>
+            &middot;
+        </li>
+        <li>
+            <a href="#" style="margin: 10px;">
+                Support
+            </a>
+        </li>
+        <li>
+            &middot;
+        </li>
+        <li>
+            <a href="#" style="margin: 10px;">
+                <span>Made with <span style="color: #e25555;">&#9829;</span> by Burnthebook</span>
+            </a>
+        </li>
+    </ul>
+{% endblock %}

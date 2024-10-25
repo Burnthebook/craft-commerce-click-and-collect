@@ -1,0 +1,145 @@
+{#
+/**
+ * Click and Collect plugin for Craft CMS 4.x
+ *
+ * Add drop in Click and Collect functionality to Craft Commerce.
+ *
+ * @link        https://burnthebook.co.uk
+ * @author      Michael Burton <mikey@burnthebook.co.uk>
+ * @since       0.0.1
+ * @copyright   Copyright (c) 2022 burnthebook
+ */
+#}
+{% import "_includes/forms" as forms %}
+{% set address = address ?? collectionPoint.getAddress() ?? create('craft\\elements\\Address') %}
+
+{{ forms.textField({
+    label: "Name",
+    id: "name",
+    name: "name",
+    value: collectionPoint.name ?? '',
+    required: true,
+}) }}
+
+{{ forms.textField({
+    label: "Grace period (hours)",
+    type: "number",
+    min: 0,
+    max: 48,
+    instructions: "How many business hours notice do you need before allowing the customer to collect?",
+    id: "gracePeriodHours",
+    name: "gracePeriodHours",
+    value: collectionPoint.gracePeriodHours ?? '',
+    required: true,
+}) }}
+
+{% set countries = craft.app.getAddresses().getCountryRepository().getAll() %}
+{% set countryOptions = [] %}
+{% for code, country in countries %}
+    {% set countryOptions = countryOptions | merge([{
+        label: country.name,
+        value: code,
+        selected: code == (address.countryCode ?? null)
+    }]) %}
+{% endfor %}
+
+{{ forms.selectizeField({
+    label: "Country",
+    id: "countryCode",
+    name: "address[countryCode]",
+    options: countryOptions,
+    required: true,
+    errors: address.getErrors('countryCode'),
+}) }}
+
+{{ forms.textField({
+    label: "Address Line 1",
+    id: "addressLine1",
+    name: "address[addressLine1]",
+    value: address.addressLine1 ?? '',
+    required: true,
+}) }}
+
+{{ forms.textField({
+    label: "Address Line 2",
+    id: "addressLine2",
+    name: "address[addressLine2]",
+    value: address.addressLine2 ?? '',
+    required: true,
+}) }}
+
+{{ forms.textField({
+    label: "Town/City",
+    id: "locality",
+    name: "address[locality]",
+    value: address.locality ?? '',
+    required: true,
+}) }}
+
+{{ forms.textField({
+    label: "County/State",
+    id: "administrativeArea",
+    name: "address[administrativeArea]",
+    value: address.administrativeArea ?? '',
+    required: false,
+}) }}
+
+<input type="hidden" id="postalCode" name="address[postalCode]" value="{{ collectionPoint.postcode }}">
+
+<div style="display:flex;align-items: flex-end; justify-content: flex-end; gap: 20px;">
+    <div style="width: 90%;">
+        {{ forms.textField({
+            label: "Postcode",
+            id: "postcode",
+            name: "postcode",
+            value: collectionPoint.postcode ?? '',
+            required: true,
+        }) }}
+    </div>
+    <div style="flex: 1;">
+        <a onclick="getLatLngForPostcode()" class="btn secondary">Get Latitude &amp; Longitude</a>
+    </div>
+</div>
+
+{{ forms.textField({
+    label: "Latitude",
+    id: "latitude",
+    name: "latitude",
+    value: collectionPoint.latitude ?? '',
+    required: true,
+}) }}
+
+{{ forms.textField({
+    label: "Longitude",
+    id: "longitude",
+    name: "longitude",
+    value: collectionPoint.longitude ?? '',
+    required: true,
+}) }}
+
+<input type="submit" class="btn submit" value="Save">
+
+<script>
+function getLatLngForPostcode() {
+    const postcode = document.getElementById('postcode').value;
+
+    fetch('/actions/craft-commerce-click-and-collect/collection/get-address-data', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': '{{ craft.app.request.csrfToken|e('js') }}'
+        },
+        body: JSON.stringify({ postcode: postcode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('postcode').value = data.postcode;
+        document.getElementById('latitude').value = data.latitude;
+        document.getElementById('longitude').value = data.longitude;
+        document.getElementById('postalCode').value = data.postcode;
+    });
+
+
+}
+</script>

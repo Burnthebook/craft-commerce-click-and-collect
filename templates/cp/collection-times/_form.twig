@@ -1,0 +1,105 @@
+{#
+/**
+ * Click and Collect plugin for Craft CMS 4.x
+ *
+ * Add drop in Click and Collect functionality to Craft Commerce.
+ *
+ * @link        https://burnthebook.co.uk
+ * @author      Michael Burton <mikey@burnthebook.co.uk>
+ * @since       0.0.1
+ * @copyright   Copyright (c) 2022 burnthebook
+ */
+#}
+{% import "_includes/forms" as forms %}
+
+{% if collectionPoints is not empty %}
+    {# Prepare options for the Collection Point select field #}
+    {% set collectionPointOptions = [] %}
+    {% for point in collectionPoints %}
+        {% set collectionPointOptions = collectionPointOptions | merge([{
+            label: point.name,
+            value: point.id,
+            selected: point.id == (collectionTime.collectionPointId ?? null)
+        }]) %}
+    {% endfor %}
+
+    {# Collection Point Select Field #}
+    {{ forms.selectizeField({
+        label: "Collection Point",
+        id: "collectionPointId",
+        name: "collectionPointId",
+        options: collectionPointOptions,
+        required: true,
+        errors: collectionTime.getErrors('collectionPointId'),
+    }) }}
+
+    {{ forms.selectizeField({
+        label: "Day",
+        id: "day",
+        name: "day",
+        type: "time",
+        value: collectionTime.day ? collectionTime.day : '',
+        options: [
+            {
+                label: 'Monday',
+                value: 'mon',
+            },
+            {
+                label: 'Tuesday',
+                value: 'tue',
+            },
+            {
+                label: 'Wednesday',
+                value: 'wed',
+            },
+            {
+                label: 'Thursday',
+                value: 'thu',
+            },
+            {
+                label: 'Friday',
+                value: 'fri',
+            },
+            {
+                label: 'Saturday',
+                value: 'sat',
+            },
+            {
+                label: 'Sunday',
+                value: 'sun',
+            }
+        ],
+        required: true,
+        errors: collectionTime.getErrors('day'),
+    }) }}
+
+    {{ forms.textField({
+        label: "Opening Time",
+        id: "openingTime",
+        name: "openingTime",
+        type: "time",
+        value: collectionTime.openingTime ? collectionTime.openingTime|date('H:i') : '',
+        required: true,
+        errors: collectionTime.getErrors('openingTime'),
+    }) }}
+
+    {{ forms.textField({
+        label: "Closing Time",
+        id: "closingTime",
+        name: "closingTime",
+        type: "time",
+        value: collectionTime.closingTime ? collectionTime.closingTime|date('H:i') : '',
+        required: true,
+        errors: collectionTime.getErrors('closingTime'),
+    }) }}
+
+    {# Submit Button #}
+    <input type="submit" class="btn submit" value="Save">
+
+{% else %}
+    {# Display message with a big centered button #}
+    <div style="text-align: center; margin-top: 50px;">
+        <p>You need to create a collection point before creating collection times.</p>
+        <a href="{{ url('craft-commerce-click-and-collect/collection-points/new') }}" class="btn big">Create Collection Point</a>
+    </div>
+{% endif %}

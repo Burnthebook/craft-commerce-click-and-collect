@@ -1,0 +1,297 @@
+{#
+/**
+ * Click and Collect plugin for Craft CMS 4.x
+ *
+ * Add drop in Click and Collect functionality to Craft Commerce.
+ *
+ * @link        https://burnthebook.co.uk
+ * @author      Michael Burton <mikey@burnthebook.co.uk>
+ * @since       0.0.1
+ * @copyright   Copyright (c) 2022 burnthebook
+ */
+#}
+
+<div class="delivery__form delivery__collection-form-outer" id="collection-form">
+    <h3 style="margin-bottom: 14px;">Find a collection point</h3>
+
+    <form method="post" class="delivery__collection-form" id="find-collection-points">
+        {# Postcode or Shop Name #}
+        <label for="postcode" class="delivery__label">Enter a postcode, town, or shop name</label>
+        <input type="text" id="postcode" placeholder="Postcode"/>
+        <button type="submit" class="hide-for-large" id="search-button">Search</button>
+    </form>
+
+    {# Main form for submitting the selected collection point #}
+    <form method="post" class="delivery__collection-form">
+        {{ csrfInput() }}
+        {{ actionInput('commerce/cart/update-cart') }}
+        {{ redirectInput('/checkout/delivery-checkout') }}
+        {{ hiddenInput('shippingMethodHandle', 'clickAndCollect') }}
+        <div id="collection-points-error-container"></div>
+        <div id="collection-points-container"></div>
+    </form>
+</div>
+
+<script>
+    // Get a reference to the form
+    const findCollectionPointsForm = document.getElementById('find-collection-points');
+
+    // Add event listener to the form's 'submit' event
+    findCollectionPointsForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const postcode = document.getElementById('postcode').value;
+
+        fetch('/actions/craft-commerce-click-and-collect/collection/find-collection-points', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': '{{ csrfToken }}'
+            },
+            body: JSON.stringify({ postcode: postcode })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const html = renderCollectionPoints(data, postcode);
+            document.getElementById('collection-points-container').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching collection points:', error);
+            document.getElementById('collection-points-error-container').innerHTML = error;
+            // Optionally display an error message to the user
+        });
+    });
+
+    function renderCollectionPoints(collectionPoints, postcode) {
+        let html = '';
+
+        if (collectionPoints instanceof Array) {
+            // clear any previous errors
+            document.getElementById('collection-points-error-container').innerHTML = '';
+
+            html = `
+                <h3>Your results for &quot;${postcode}&quot;</h3>
+                <div class="delivery__collection-options">
+            `;
+            collectionPoints.forEach(point => {
+                // Get the first available collection time
+                const firstCollectionTime = point.firstCollectionTime;
+
+                let firstOpeningTime = '';
+                let dateString = '';
+                let timeString = '';
+                if (firstCollectionTime) {
+                    const availableTime = new Date(firstCollectionTime);
+                    
+                    // Format time to "5pm"
+                    let rawTimeString = availableTime.toLocaleTimeString([], { hour: 'numeric', hour12: true });
+                    timeString = rawTimeString.replace(' ', ''); // Remove the space between hour and am/pm
+                    
+                    // Get day of the week, day of the month, and month name
+                    const dayOfWeek = availableTime.toLocaleDateString([], { weekday: 'long' });
+                    const day = availableTime.getDate();
+                    const month = availableTime.toLocaleDateString([], { month: 'long' });
+
+                    // Add ordinal suffix (st, nd, rd, th) to the day
+                    const ordinalSuffix = (day) => {
+                        if (day > 3 && day < 21) return 'th'; // for 11th to 20th
+                        switch (day % 10) {
+                            case 1: return 'st';
+                            case 2: return 'nd';
+                            case 3: return 'rd';
+                            default: return 'th';
+                        }
+                    };
+
+                    dateString = `${dayOfWeek} ${day}${ordinalSuffix(day)} ${month}`; // Format as "Friday 25th October"
+                    
+                    firstOpeningTime = `${timeString} on ${dateString}`; // Example: "5pm on Friday 25th October"
+                }
+
+                const address = point.craft_address;
+
+                html += `
+                    <div class="delivery__collection-option">
+                        <div class="delivery__collection-option-text">
+                            <h4>${point.name} <span class="hide-for-large">${point.distance.toFixed(2)} Miles</span></h4>
+                            <p>${address.addressLine1}, ${address.locality}, ${address.postalCode}</p>
+                            ${
+                                firstCollectionTime
+                                ? `<p>Collect from <b>${timeString}</b> on ${dateString} for <b>Free</b></p>` // Now formatted
+                                : '<p>No collection times available.</p>'
+                            }
+                            <a href="javascript:void(0)" data-clickcollect-modal="point_${point.id}">Maps and opening times</a>
+
+                            <div class="delivery__collection-option-form hide">
+                                {# Address Inputs (disabled by default) #}
+                                <input type="hidden" name="shippingAddress[firstName]" value="Collection Point" disabled>
+                                <input type="hidden" name="shippingAddress[lastName]" value="${point.name}" disabled>
+                                <input type="hidden" name="shippingAddress[addressLine1]" value="${address.addressLine1}" disabled>
+                                <input type="hidden" name="shippingAddress[addressLine2]" value="${address.addressLine2}" disabled>
+                                <input type="hidden" name="shippingAddress[locality]" value="${address.locality}" disabled>
+                                <input type="hidden" name="shippingAddress[administrativeArea]" value="${address.administrativeArea}" disabled>
+                                <input type="hidden" name="shippingAddress[postalCode]" value="${address.postalCode}" disabled>
+                                <input type="hidden" name="shippingAddress[countryCode]" value="${address.countryCode}" disabled>
+
+                                {# Custom Fields #}
+                                <input type="hidden" name="fields[btbCncCollectionPoint]" value="${point.name}" disabled>
+                                <input type="hidden" name="fields[btbCncCollectionTime]" value="${firstOpeningTime}" disabled>
+
+                                {# Mobile Number Field #}
+                                <label class="delivery__label" for="mobileNumber_${point.id}">Mobile Number</label>
+                                <input type="tel" id="mobileNumber_${point.id}" name="fields[btbCncMobileNumber]" placeholder="Enter your mobile number" class="mobile-number-field" disabled required>
+
+                                {# Gift Options #}
+                                <div class="delivery__delivery-phone-outer">
+                                    <h4>Is this a gift?</h4>
+                                </div>
+                                <div class="delivery__default-buttons-gift-wrap">
+                                    <div>
+                                        <label for="giftOption_${point.id}" class="gift-wrap__label custom-checkbox" style="text-align: left">
+                                            <input type="hidden" name="fields[giftOption]" value="0" disabled>
+                                            <input type="checkbox" id="giftOption_${point.id}" name="fields[giftOption]" value="1" class="custom-checkbox-input" checked disabled>
+                                            <span class="custom-checkbox-box"></span>
+                                            Yes, this order is a gift (Prices will not be shown on the delivery note)
+                                        </label>
+                                    </div>
+                                </div>
+                                <label for="giftMessage_${point.id}" class="delivery__label">Add a gift message (optional)</label>
+                                <textarea name="fields[giftMessage]" id="giftMessage_${point.id}" style="background: transparent; margin-bottom: 12px; border-radius: 4px;" rows="2" disabled></textarea>
+                                <p class="delivery__gift-abstract">This message will appear on the delivery note</p>
+
+                                {# Submit Button #}
+                                <button type="submit" class="delivery__button" style="max-width: 203px; padding: 0px 10px;">Continue to payment</button>
+                            </div>
+                        </div>
+                        <div class="hide-for-large delivery__small-button">
+                            <a href="javascript:void(0)" data-clickcollect-shopselect>Select Shop</a>
+                        </div>
+                        <div class="delivery__collection-option-button show-for-large">
+                            <h5>${point.distance.toFixed(2)} Miles</h5>
+                            <a href="javascript:void(0)" data-clickcollect-shopselect>Select Shop</a>
+                        </div>
+                    </div>
+                    <div class="delivery__collection-modal" data-point-modal-id="point_${point.id}">
+                        <div class="delivery__collection-modal-map">
+                            <iframe
+                                src="https://maps.google.com/maps?width=100%25&amp;height=500&amp;hl=en&amp;q=${address.addressLine1}, ${address.locality}, ${address.postalCode}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+                        <div class="delivery__collection-modal-hours">
+                            <p>Collect from <b>${timeString}</b> on ${dateString} for Free</b></p>
+                            <p>${point.name}</p>
+                            <p>${address.addressLine1}</p>
+                            <p>${address.locality}</p>
+                            <p>${address.postalCode}</p>
+                            ${point.openingHours.map(hour => `<p>${hour}</p>`).join('')}
+                            <a href="javascript:void(0)" data-clickcollect-shopselect>Select Shop</a>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `<div class="delivery__collection-modal-blackout"></div></div>`;
+        } else {
+            document.getElementById('collection-points-error-container').innerHTML = collectionPoints.message;
+        }
+
+        return html;
+    }
+
+    document.addEventListener('click', function (event) {
+        // Select Shop to Change Shop button
+        if (event.target.matches('[data-clickcollect-shopselect]')) {
+            const el = event.target;
+            el.textContent = 'Change Shop';
+
+            // Get the closest option container and reveal its form
+            const optionContainer = el.closest('.delivery__collection-option');
+            const formContainer = optionContainer.querySelector('.delivery__collection-option-form');
+
+            if (formContainer) {
+                formContainer.classList.remove('hide'); // Unhide the form
+
+                // Enable inputs in the selected form
+                const inputs = formContainer.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.disabled = false;
+                });
+
+                // Mark the mobile number field as required only when the form is visible
+                const mobileNumberField = formContainer.querySelector('.mobile-number-field');
+                if (mobileNumberField) {
+                    mobileNumberField.setAttribute('required', 'true');
+                }
+
+                // Hide all other options
+                document.querySelectorAll('.delivery__collection-option').forEach(option => {
+                    if (option !== optionContainer) {
+                        option.style.display = 'none'; // Hide other options
+
+                        // Disable inputs in hidden forms
+                        const hiddenForm = option.querySelector('.delivery__collection-option-form');
+                        if (hiddenForm) {
+                            const hiddenInputs = hiddenForm.querySelectorAll('input, select, textarea');
+                            hiddenInputs.forEach(input => {
+                                input.disabled = true;
+                            });
+
+                            // Remove required from hidden mobile number field
+                            const hiddenMobileField = hiddenForm.querySelector('.mobile-number-field');
+                            if (hiddenMobileField) {
+                                hiddenMobileField.removeAttribute('required');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+    // Modal Handler
+    document.addEventListener('click', function (event) {
+        // Open modal logic
+        if (event.target.matches('[data-clickcollect-modal]')) {
+            // Extract point ID by splitting the 'point_${point.id}' string
+            const pointId = event.target.getAttribute('data-clickcollect-modal').split('_')[1];
+            
+            // Select the modal and blackout
+            const modal = document.querySelector(`[data-point-modal-id="point_${pointId}"]`);
+            const blackout = document.querySelector('.delivery__collection-modal-blackout');
+            
+            if (modal && blackout) {
+                modal.classList.add('is-active');
+                blackout.classList.add('is-active'); // Show blackout
+            }
+        }
+
+        // Close modal when clicking "Select Shop"
+        if (event.target.matches('[data-clickcollect-shopselect]')) {
+            const activeModal = document.querySelector('.delivery__collection-modal.is-active');
+            const blackout = document.querySelector('.delivery__collection-modal-blackout.is-active');
+
+            if (activeModal) {
+                activeModal.classList.remove('is-active');
+            }
+            if (blackout) {
+                blackout.classList.remove('is-active');
+            }
+        }
+
+        // Close modal when clicking the blackout
+        if (event.target.matches('.delivery__collection-modal-blackout.is-active')) {
+            const activeModal = document.querySelector('.delivery__collection-modal.is-active');
+            const blackout = document.querySelector('.delivery__collection-modal-blackout.is-active');
+
+            if (activeModal) {
+                activeModal.classList.remove('is-active');
+            }
+            if (blackout) {
+                blackout.classList.remove('is-active');
+            }
+        }
+    });
+</script>

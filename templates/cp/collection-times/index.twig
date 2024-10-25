@@ -1,0 +1,78 @@
+{#
+/**
+ * Click and Collect plugin for Craft CMS 4.x
+ *
+ * Add drop in Click and Collect functionality to Craft Commerce.
+ *
+ * @link        https://burnthebook.co.uk
+ * @author      Michael Burton <mikey@burnthebook.co.uk>
+ * @since       0.0.1
+ * @copyright   Copyright (c) 2022 burnthebook
+ */
+#}
+{% extends "_layouts/cp" %}
+
+{% set title = "Opening Times" %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<p><a href="{{ url('craft-commerce-click-and-collect/collection-times/new') }}" class="btn submit">New Opening Time</a></p>
+
+<table class="data fullwidth">
+    <thead>
+        <tr>
+            <th>Collection Point</th>
+            <th>Day</th>
+            <th>Opening Time</th>
+            <th>Closing Time</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for time in collectionTimes %}
+        <tr>
+            <td>{{ time.collectionPoint.name }}</td>
+            <td>{{ time.day|date('l') }}</td>
+            <td>{{ time.openingTime|date('H:i') }}</td>
+            <td>{{ time.closingTime|date('H:i') }}</td>
+            <td>
+                <a href="{{ url('craft-commerce-click-and-collect/collection-times/edit/' ~ time.id) }}">Edit</a> |
+                <a href="{{ url('craft-commerce-click-and-collect/collection-times/delete/' ~ time.id) }}" class="delete">Delete</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">No opening times found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block footer %}
+    <hr>
+    <ul style="margin:0;display:flex;align-items:center;justify-content:center;">
+        <li>
+            <a href="#" style="margin: 10px;">
+                Purchase License
+            </a>
+        </li>
+        <li>
+            &middot;
+        </li>
+        <li>
+            <a href="#" style="margin: 10px;">
+                Support
+            </a>
+        </li>
+        <li>
+            &middot;
+        </li>
+        <li>
+            <a href="#" style="margin: 10px;">
+                <span>Made with <span style="color: #e25555;">&#9829;</span> by Burnthebook</span>
+            </a>
+        </li>
+    </ul>
+{% endblock %}
