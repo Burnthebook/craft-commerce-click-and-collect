@@ -39,7 +39,7 @@ class ClickAndCollect extends Plugin
     public function init()
     {
         parent::init();
-    
+
         // Register services
         $this->setComponents([
             'collectionPoints' => services\CollectionPointService::class,

@@ -136,16 +136,16 @@ class CollectionPointsController extends Controller
             $address->administrativeArea,
             $address->postalCode
         ];
-        
-        $nonEmptyParts = array_filter($addressParts, function($part) {
+
+        $nonEmptyParts = array_filter($addressParts, function ($part) {
             return !empty($part);
         });
-        
+
         $collectionPoint->address = implode(',', $nonEmptyParts);
 
         // Set the craft_address_id on the collection point
         $collectionPoint->craft_address_id = $address->id;
-        
+
         if (ClickAndCollect::$plugin->collectionPoints->saveCollectionPoint($collectionPoint)) {
             \Craft::$app->getSession()->setNotice('Collection Point saved.');
             return $this->redirectToPostedUrl();

@@ -13,6 +13,11 @@ use craft\fieldlayoutelements\CustomField;
 
 class OrderService extends Component
 {
+    /**
+     * Creates fields for the "Click & Collect" group and tab in the order layout.
+     *
+     * @return void
+    */
     public function createFields()
     {
         // Create or retrieve the group
@@ -27,7 +32,12 @@ class OrderService extends Component
         $this->createField('collectionTime', 'Collection Time', 'Customer collection time.', $fieldGroup, $clickAndCollectTab);
     }
 
-    // Create or retrieve a field group
+    /**
+     * Creates a new field group with the given name, or returns an existing group with the same name.
+     *
+     * @param string $groupName The name of the field group to create.
+     * @return FieldGroup|false The newly created field group, or false if there was an error.
+    */
     private function createGroup($groupName)
     {
         $fieldsService = Craft::$app->getFields();
@@ -51,7 +61,13 @@ class OrderService extends Component
         return $fieldGroup;
     }
 
-    // Create or retrieve a tab in the field layout
+    /**
+     * Creates a new tab for a given element type.
+     *
+     * @param string $tabName The name of the tab to be created.
+     * @param string $elementType The type of element the tab will be associated with.
+     * @return FieldLayoutTab|false The newly created tab, or false if there was an error.
+    */
     private function createTab($tabName, $elementType)
     {
         $fieldsService = Craft::$app->getFields();
@@ -83,7 +99,16 @@ class OrderService extends Component
         return $newTab;
     }
 
-    // Generic method to create a field
+    /**
+     * Creates a new field with the given handle suffix, name, instructions, field group, and tab.
+     *
+     * @param string $handleSuffix The suffix to use for the field handle.
+     * @param string $name The name of the field.
+     * @param string $instructions The instructions for the field.
+     * @param FieldGroup $fieldGroup The field group to add the field to.
+     * @param Tab $tab The tab to add the field to.
+     * @return bool Whether the field was successfully created and added to the tab.
+    */
     private function createField($handleSuffix, $name, $instructions, $fieldGroup, $tab)
     {
         $fieldsService = Craft::$app->getFields();
@@ -111,7 +136,14 @@ class OrderService extends Component
         $this->addFieldToTab($field, $tab, Order::class);
     }
 
-    // Add a field to a given tab in the layout
+    /**
+     * Adds a field to a tab in a field layout for a specific element type.
+     *
+     * @param Field $field The field to be added.
+     * @param Tab $tab The tab in the field layout to add the field to.
+     * @param string $elementType The type of element the field layout is for.
+     * @return bool Whether the field was successfully added to the tab.
+    */
     private function addFieldToTab($field, $tab, $elementType)
     {
         $fieldsService = Craft::$app->getFields();

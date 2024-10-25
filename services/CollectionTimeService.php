@@ -126,7 +126,7 @@ class CollectionTimeService extends Component
         $collectionTimes = [];
         foreach ($records as $record) {
             $attributes = $record->toArray();
-            
+
             // Convert 'openingTime' to DateTime if necessary
             if (isset($attributes['openingTime'])) {
                 $attributes['openingTime'] = new \DateTime($attributes['openingTime']);

@@ -89,7 +89,7 @@ class CollectionTimesController extends Controller
 
         $collectionTime->collectionPointId = $request->getBodyParam('collectionPointId');
         $collectionTime->day = $request->getBodyParam('day');
-        
+
         $collectionTime->openingTime = new \DateTime($request->getBodyParam('openingTime'));
         $collectionTime->closingTime = new \DateTime($request->getBodyParam('closingTime'));
 

@@ -198,7 +198,13 @@ class CollectionPointService extends Component
         return $collectionPoints;
     }
 
-    public function getNextAvailableCollectionTime($collectionPointId) 
+    /**
+     * Gets the next available collection time for a given collection point.
+     *
+     * @param int $collectionPointId The ID of the collection point.
+     * @return DateTime|null The next available collection time, or null if none is available.
+    */
+    public function getNextAvailableCollectionTime($collectionPointId)
     {
         // Get collection point.
         $collectionPoint = $this->getCollectionPointById($collectionPointId);
@@ -230,7 +236,13 @@ class CollectionPointService extends Component
         return null;
     }
 
-    public function getOpeningHours(array $collectionTimes) 
+    /**
+     * Returns an array of opening hours for each day of the week, based on the given collection times.
+     *
+     * @param array $collectionTimes An array of collection times.
+     * @return array An array of opening hours for each day of the week, sorted according to the desired order of days.
+    */
+    public function getOpeningHours(array $collectionTimes)
     {
         $days = [];
 
@@ -270,7 +282,13 @@ class CollectionPointService extends Component
         return $sortedDays;
     }
 
-    public function getFormattedOpeningHours(array $collectionTimes) 
+    /**
+     * Returns an array of formatted opening hours for each day in the given collection times.
+     *
+     * @param array $collectionTimes An array of collection times for each day.
+     * @return array An array of formatted opening hours for each day.
+    */
+    public function getFormattedOpeningHours(array $collectionTimes)
     {
         // Map to convert day abbreviations to full names
         $dayMap = [
@@ -282,49 +300,56 @@ class CollectionPointService extends Component
             'sat' => 'Sat',
             'sun' => 'Sun'
         ];
-    
+
         $formattedDays = [];
-    
+
         foreach ($collectionTimes as $collectionTime) {
             // Format the opening and closing times
             $openingTime = $collectionTime->openingTime->format('H:i');
             $closingTime = $collectionTime->closingTime->format('H:i');
-            
+
             // Map the day abbreviation to the full name
             $day = $dayMap[$collectionTime->day] ?? $collectionTime->day;
-    
+
             // Create the formatted string for each day
             $formattedDays[] = "{$day} {$openingTime} - {$closingTime}";
         }
-    
+
         return $formattedDays;
     }
 
-
-    protected function getClosestTime(DateTime $dateTime, array $times) {
+    /**
+     * Returns the closest DateTime object from the given array of times to the given DateTime object.
+     *
+     * @param DateTime $dateTime The original DateTime object to compare against.
+     * @param array $times An array of times to compare against the original DateTime object.
+     * @return DateTime|null The closest DateTime object from the given array of times, or null if the array is empty.
+    */
+    protected function getClosestTime(DateTime $dateTime, array $times)
+    {
         $closestDateTime = null;
         $smallestDifference = null;
-    
+
         foreach ($times as $time) {
             // Clone the original DateTime object to preserve the date
             $timeObject = clone $dateTime;
-            
+
             // Set the time part using the time from the array
             $timeObject->modify($time);
-    
+
             // Calculate the difference between the original DateTime and the new one
             $difference = $dateTime->diff($timeObject);
-    
+
             // Convert the difference to seconds
             $secondsDifference = abs($difference->h * 3600 + $difference->i * 60 + $difference->s);
-    
+
             // Track the smallest difference and closest DateTime
             if ($smallestDifference === null || $secondsDifference < $smallestDifference) {
                 $smallestDifference = $secondsDifference;
                 $closestDateTime = $timeObject; // Store the closest DateTime object
             }
         }
-    
+
         return $closestDateTime;
     }
 }

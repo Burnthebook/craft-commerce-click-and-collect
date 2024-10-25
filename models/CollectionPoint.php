@@ -23,7 +23,7 @@ use burnthebook\craftcommerceclickandcollect\ClickAndCollect;
 class CollectionPoint extends Model
 {
     public ?int $id = null;
-    
+
     public ?int $craft_address_id = null;
 
     public ?int $gracePeriodHours = null;
@@ -47,7 +47,7 @@ class CollectionPoint extends Model
     private $_collectionTimes = null;
 
     public ?float $distance = null;
-    
+
     private ?Address $_address = null;
 
     /**
@@ -74,17 +74,17 @@ class CollectionPoint extends Model
      *
      * @return array|null The collection times for the current collection point, or null if none are found.
      */
-     public function getCollectionTimes()
-     {
-         if ($this->_collectionTimes === null) {
-             $this->_collectionTimes = ClickAndCollect::$plugin->collectionTimes->getCollectionTimesByCollectionPointId($this->id, [
-                 'orderBy' => 'openingTime ASC',
-             ]);
-         }
- 
-         return $this->_collectionTimes;
-     }
- 
+    public function getCollectionTimes()
+    {
+        if ($this->_collectionTimes === null) {
+            $this->_collectionTimes = ClickAndCollect::$plugin->collectionTimes->getCollectionTimesByCollectionPointId($this->id, [
+                'orderBy' => 'openingTime ASC',
+            ]);
+        }
+
+        return $this->_collectionTimes;
+    }
+
 
     /**
      * Returns the first collection time from the collection times array.
@@ -94,7 +94,7 @@ class CollectionPoint extends Model
     public function getFirstCollectionTime()
     {
         $collectionPointId = $this->id;
-        
+
         return ClickAndCollect::$plugin->collectionPoints->getNextAvailableCollectionTime($collectionPointId);
     }
 

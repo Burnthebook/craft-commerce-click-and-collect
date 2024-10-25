@@ -33,13 +33,13 @@ class CollectionController extends Controller
 {
     protected array|int|bool $allowAnonymous = ['actionFindCollectionPoints', 'actionGetNextAvailableCollectionTime'];
 
-    public function actionGetNextAvailableCollectionTime() : Response
+    public function actionGetNextAvailableCollectionTime(): Response
     {
         $collectionPointId =  \Craft::$app->request->getRequiredParam('collectionPointId');
         $nextAvailableCollectionTime = ClickAndCollect::$plugin->collectionPoints->getNextAvailableCollectionTime($collectionPointId);
         return $this->asJson(compact('nextAvailableCollectionTime'));
     }
-    
+
     /**
      * Finds nearby collection points based on a given postcode.
      *
@@ -74,13 +74,13 @@ class CollectionController extends Controller
 
         // Find nearby collection points
         $collectionPoints = ClickAndCollect::$plugin->collectionPoints->findNearby($latitude, $longitude, 500);
-        
+
         // Prepare data for JSON response
         $data = array_map(function ($point) {
 
             // Load Address from Craft
             $address = Address::find()->id($point->craft_address_id)->one();
-            
+
             // Get opening hours
             $openingTimes = ClickAndCollect::$plugin->collectionPoints->getFormattedOpeningHours($point->getCollectionTimes());
 
@@ -123,14 +123,14 @@ class CollectionController extends Controller
      * @return Response The JSON response containing the postcode, latitude, and longitude.
      * @throws Exception If no coordinates are found or if the latitude or longitude are not provided.
      */
-    public function actionGetAddressData() : Response
+    public function actionGetAddressData(): Response
     {
         // $this->requireAcceptsJson();
 
         $postcode = \Craft::$app->request->getRequiredParam('postcode');
 
         $coordinates = $this->getGeolocationByPostcode($postcode);
-        
+
 
         if (!$coordinates) {
             // No coordinates found.
@@ -148,8 +148,8 @@ class CollectionController extends Controller
         }
 
         return $this->asJson([
-            'postcode' => $coordinates['postcode'], 
-            'latitude' => $coordinates['latitude'], 
+            'postcode' => $coordinates['postcode'],
+            'latitude' => $coordinates['latitude'],
             'longitude' => $coordinates['longitude']
         ]);
     }
