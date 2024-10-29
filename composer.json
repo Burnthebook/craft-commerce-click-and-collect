@@ -1,0 +1,49 @@
+{
+  "name": "burnthebook/craft-commerce-click-and-collect",
+  "description": "A Craft Commerce plugin enabling Click & Collect functionality.",
+  "type": "craft-plugin",
+  "version": "0.1.0",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-commerce",
+    "craft-plugin",
+    "click and collect"
+  ],
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Burnthebook",
+      "homepage": "https://burnthebook.co.uk"
+    },
+    {
+      "name": "Michael Burton",
+      "email": "mikey@burnthebook.co.uk"
+    }
+  ],
+  "support": {
+    "email": "support@burnthebook.co.uk",
+    "issues": "https://github.com/burnthebook/craft-commerce-click-and-collect/issues?state=open",
+    "source": "https://github.com/burnthebook/craft-commerce-click-and-collect",
+    "docs": "https://github.com/burnthebook/craft-commerce-click-and-collect/blob/main/README.md"
+  },
+  "require": {
+    "craftcms/cms": "^4.0",
+    "craftcms/commerce": "^4.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "burnthebook\\craftcommerceclickandcollect\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Click and Collect for Craft Commerce",
+    "handle": "craft-commerce-click-and-collect",
+    "hasCpSettings": true,
+    "hasCpSection": true,
+    "changelogUrl": "https://github.com/burnthebook/craft-commerce-click-and-collect/blob/main/CHANGELOG.md",
+    "components": {},
+    "class": "burnthebook\\craftcommerceclickandcollect\\ClickAndCollect"
+  }
+}

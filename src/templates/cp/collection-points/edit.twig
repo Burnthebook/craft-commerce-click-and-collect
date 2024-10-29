@@ -13,6 +13,7 @@
 {% extends "_layouts/cp" %}
 
 {% set title = (collectionPoint.id ? 'Edit' : 'New') ~ ' Collection Point' %}
+{% set selectedSubnavItem = 'collection-points' %}
 
 {% block content %}
 <h1>{{ title }}</h1>

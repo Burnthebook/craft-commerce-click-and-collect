@@ -30,6 +30,20 @@ Click & Collect for Craft Commerce works on Craft 4.x and Craft Commerce 4.0.0
 
 ## Usage
 
+On your Delivery Template:
+
+```
+{% include 'craft-commerce-click-and-collect/frontend/collection-points' with { csrfToken: csrfToken } %}
+```
+
+This will include the necessary form to interface with commerce, it provides a postcode lookup feature that uses postcodes.io, which then grabs the collection points from the admin and sorts them by distance. We also then calculate the earliest available collection time and display that to the user.
+
+There may be some changes needed to integrate this into your design, or you can use our included full suite of Craft Commerce templates by running the following command:
+
+```
+@todo
+```
+
 ## Changelog
 
 ## Roadmap
