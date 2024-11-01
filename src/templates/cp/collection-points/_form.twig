@@ -38,8 +38,7 @@
 {% for code, country in countries %}
     {% set countryOptions = countryOptions | merge([{
         label: country.name,
-        value: code,
-        selected: code == (address.countryCode ?? null)
+        value: code
     }]) %}
 {% endfor %}
 
@@ -50,6 +49,7 @@
     options: countryOptions,
     required: true,
     errors: address.getErrors('countryCode'),
+    value: address.countryCode
 }) }}
 
 {{ forms.textField({
@@ -65,7 +65,7 @@
     id: "addressLine2",
     name: "address[addressLine2]",
     value: address.addressLine2 ?? '',
-    required: true,
+    required: false,
 }) }}
 
 {{ forms.textField({

@@ -51,7 +51,13 @@
             },
             body: JSON.stringify({ postcode: postcode })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                // This will catch HTTP errors, including 500 Internal Server Error
+                throw new Error(`Sorry, there was an error feteching the collection points. Please check your postcode and try again!`);
+            }
+            return response.json();
+        })
         .then(data => {
             const html = renderCollectionPoints(data, postcode);
             document.getElementById('collection-points-container').innerHTML = html;
@@ -112,14 +118,14 @@
                 const address = point.craft_address;
 
                 html += `
-                    <div class="delivery__collection-option">
+                    <div class="delivery__collection-option" data-point-id="${point.id}">
                         <div class="delivery__collection-option-text">
                             <h4>${point.name} <span class="hide-for-large">${point.distance.toFixed(2)} Miles</span></h4>
                             <p>${address.addressLine1}, ${address.locality}, ${address.postalCode}</p>
                             ${
                                 firstCollectionTime
                                 ? `<p>Collect from <b>${timeString}</b> on ${dateString} for <b>Free</b></p>` // Now formatted
-                                : '<p>No collection times available.</p>'
+                                : '<p><strong>Sorry, no collection times available.</strong></p>'
                             }
                             <a href="javascript:void(0)" data-clickcollect-modal="point_${point.id}">Maps and opening times</a>
 
@@ -164,15 +170,28 @@
                                 <button type="submit" class="delivery__button" style="max-width: 203px; padding: 0px 10px;">Continue to payment</button>
                             </div>
                         </div>
-                        <div class="hide-for-large delivery__small-button">
-                            <a href="javascript:void(0)" data-clickcollect-shopselect>Select Shop</a>
-                        </div>
-                        <div class="delivery__collection-option-button show-for-large">
-                            <h5>${point.distance.toFixed(2)} Miles</h5>
-                            <a href="javascript:void(0)" data-clickcollect-shopselect>Select Shop</a>
-                        </div>
+                        ${
+                            firstCollectionTime ? `
+                                <div class="hide-for-large delivery__small-button">
+                                    <a href="javascript:void(0)" data-clickcollect-shopselect="point_${point.id}">Select Shop</a>
+                                </div>
+                                <div class="delivery__collection-option-button show-for-large">
+                                    <h5>${point.distance.toFixed(2)} Miles</h5>
+                                    <a href="javascript:void(0)" data-clickcollect-shopselect="point_${point.id}">Select Shop</a>
+                                </div>
+                            ` : 
+                            `
+                                <div class="hide-for-large delivery__small-button">
+                                    <a href="javascript:void(0)">Change to Delivery</a>
+                                </div>
+                                <div class="delivery__collection-option-button show-for-large">
+                                    <a href="javascript:void(0)">Change to Delivery</a>
+                                </div>
+                            `
+                        }
                     </div>
                     <div class="delivery__collection-modal" data-point-modal-id="point_${point.id}">
+                        <div class="delivery__collection-modal-close">&times;</div>
                         <div class="delivery__collection-modal-map">
                             <iframe
                                 src="https://maps.google.com/maps?width=100%25&amp;height=500&amp;hl=en&amp;q=${address.addressLine1}, ${address.locality}, ${address.postalCode}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
@@ -188,7 +207,7 @@
                             <p>${address.locality}</p>
                             <p>${address.postalCode}</p>
                             ${point.openingHours.map(hour => `<p>${hour}</p>`).join('')}
-                            <a href="javascript:void(0)" data-clickcollect-shopselect>Select Shop</a>
+                            <a href="javascript:void(0)" data-clickcollect-shopselect="point_${point.id}">Select Shop</a>
                         </div>
                     </div>
                 `;
@@ -200,53 +219,83 @@
 
         return html;
     }
+    
+    function selectShop(el) {
+        // Extract the point ID from the data attribute
+        const pointId = el.getAttribute('data-clickcollect-shopselect').split('_')[1];
+
+        // Find the option container and form with the matching point ID
+        const optionContainer = document.querySelector(`.delivery__collection-option[data-point-id="${pointId}"]`);
+        const formContainer = optionContainer.querySelector('.delivery__collection-option-form');
+
+        // Check if the form is currently visible (i.e., shop is selected)
+        const isShopSelected = !formContainer.classList.contains('hide');
+
+        if (isShopSelected) {
+            // Deselect the shop: Hide the form and reset the UI to show all options
+            formContainer.classList.add('hide'); // Hide the form
+
+            // Disable inputs in the deselected form
+            const inputs = formContainer.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = true;
+            });
+
+            // Remove 'required' attribute from the mobile number field
+            const mobileNumberField = formContainer.querySelector('.mobile-number-field');
+            if (mobileNumberField) {
+                mobileNumberField.removeAttribute('required');
+            }
+
+            // Reset the button text to "Select Shop"
+            el.textContent = 'Select Shop';
+
+            // Show all other options
+            document.querySelectorAll('.delivery__collection-option').forEach(option => {
+                option.style.display = ''; // Restore display for all options
+            });
+        } else {
+            // Select the shop: Show the form and hide other options
+            formContainer.classList.remove('hide'); // Unhide the form
+
+            // Enable inputs in the selected form
+            const inputs = formContainer.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
+
+            // Mark the mobile number field as required only when the form is visible
+            const mobileNumberField = formContainer.querySelector('.mobile-number-field');
+            if (mobileNumberField) {
+                mobileNumberField.setAttribute('required', 'true');
+            }
+
+            // Change button text to "Change Shop"
+            el.textContent = 'Change Shop';
+
+            // Hide all other options
+            document.querySelectorAll('.delivery__collection-option').forEach(option => {
+                if (option !== optionContainer) {
+                    option.style.display = 'none'; // Hide other options
+                }
+            });
+        }
+    }
 
     document.addEventListener('click', function (event) {
         // Select Shop to Change Shop button
         if (event.target.matches('[data-clickcollect-shopselect]')) {
             const el = event.target;
-            el.textContent = 'Change Shop';
+            selectShop(el);
 
-            // Get the closest option container and reveal its form
-            const optionContainer = el.closest('.delivery__collection-option');
-            const formContainer = optionContainer.querySelector('.delivery__collection-option-form');
+            const activeModal = document.querySelector('.delivery__collection-modal.is-active');
+            const blackout = document.querySelector('.delivery__collection-modal-blackout.is-active');
 
-            if (formContainer) {
-                formContainer.classList.remove('hide'); // Unhide the form
-
-                // Enable inputs in the selected form
-                const inputs = formContainer.querySelectorAll('input, select, textarea');
-                inputs.forEach(input => {
-                    input.disabled = false;
-                });
-
-                // Mark the mobile number field as required only when the form is visible
-                const mobileNumberField = formContainer.querySelector('.mobile-number-field');
-                if (mobileNumberField) {
-                    mobileNumberField.setAttribute('required', 'true');
-                }
-
-                // Hide all other options
-                document.querySelectorAll('.delivery__collection-option').forEach(option => {
-                    if (option !== optionContainer) {
-                        option.style.display = 'none'; // Hide other options
-
-                        // Disable inputs in hidden forms
-                        const hiddenForm = option.querySelector('.delivery__collection-option-form');
-                        if (hiddenForm) {
-                            const hiddenInputs = hiddenForm.querySelectorAll('input, select, textarea');
-                            hiddenInputs.forEach(input => {
-                                input.disabled = true;
-                            });
-
-                            // Remove required from hidden mobile number field
-                            const hiddenMobileField = hiddenForm.querySelector('.mobile-number-field');
-                            if (hiddenMobileField) {
-                                hiddenMobileField.removeAttribute('required');
-                            }
-                        }
-                    }
-                });
+            if (activeModal) {
+                activeModal.classList.remove('is-active');
+            }
+            if (blackout) {
+                blackout.classList.remove('is-active');
             }
         }
     });
@@ -268,19 +317,6 @@
             }
         }
 
-        // Close modal when clicking "Select Shop"
-        if (event.target.matches('[data-clickcollect-shopselect]')) {
-            const activeModal = document.querySelector('.delivery__collection-modal.is-active');
-            const blackout = document.querySelector('.delivery__collection-modal-blackout.is-active');
-
-            if (activeModal) {
-                activeModal.classList.remove('is-active');
-            }
-            if (blackout) {
-                blackout.classList.remove('is-active');
-            }
-        }
-
         // Close modal when clicking the blackout
         if (event.target.matches('.delivery__collection-modal-blackout.is-active')) {
             const activeModal = document.querySelector('.delivery__collection-modal.is-active');
@@ -293,5 +329,20 @@
                 blackout.classList.remove('is-active');
             }
         }
+
+        // Close modal when clicking close button
+        if (event.target.matches('.delivery__collection-modal-close')) {
+            const activeModal = document.querySelector('.delivery__collection-modal.is-active');
+            const blackout = document.querySelector('.delivery__collection-modal-blackout.is-active');
+
+            if (activeModal) {
+                activeModal.classList.remove('is-active');
+            }
+            if (blackout) {
+                blackout.classList.remove('is-active');
+            }
+        }
+
+        
     });
 </script>

@@ -96,7 +96,7 @@ class CollectionPointsController extends Controller
         }
 
         $collectionPoint->name = $request->getBodyParam('name');
-        $collectionPoint->gracePeriodHours = $request->getBodyParam('gracePeriodHours', 0);
+        $collectionPoint->gracePeriodHours = $request->getBodyParam('gracePeriodHours');
         $collectionPoint->postcode = $request->getBodyParam('postcode');
         $collectionPoint->latitude = $request->getBodyParam('latitude');
         $collectionPoint->longitude = $request->getBodyParam('longitude');

@@ -31,7 +31,7 @@ use burnthebook\craftcommerceclickandcollect\ClickAndCollect;
  */
 class CollectionController extends Controller
 {
-    protected array|int|bool $allowAnonymous = ['actionFindCollectionPoints', 'actionGetNextAvailableCollectionTime'];
+    protected array|int|bool $allowAnonymous = ['find-collection-points', 'get-next-available-collection-time'];
 
     public function actionGetNextAvailableCollectionTime(): Response
     {
@@ -48,6 +48,10 @@ class CollectionController extends Controller
      */
     public function actionFindCollectionPoints(): Response
     {
+        $this->enableCsrfValidation = false; // Disable CSRF if necessary
+
+        Craft::info('Guest request received for actionFindCollectionPoints', __METHOD__); // Debugging
+    
         // $this->requireAcceptsJson();
         $postcode = \Craft::$app->request->getRequiredParam('postcode');
 

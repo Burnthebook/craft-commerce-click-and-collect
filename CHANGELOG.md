@@ -1,5 +1,24 @@
 # Release notes for Click & Collect for Craft Commerce
 
+# Click & Collect for Craft Commerce 0.1.1 - 2024-11-01
+
+> {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
+
+### Fixes
+- Made "Address Line 2" optional instead of mandatory.
+- Improved error messaging on postcode search for a more user-friendly experience.
+- Resolved issue where the "Grace Period" field in the admin interface was not saving correctly.
+- Fixed "Country" selection field in the admin interface.
+- Adjusted "Select Shop" functionality within the maps and opening times modal to ensure it properly selects the shop.
+- "Change Shop" button now returns the user to the original page.
+- Enabled postcode search for guest users.
+- Added functionality to switch to delivery mode if no collection time is available.
+
+### Enhancements
+- Added a close ("X") button to the modal for improved usability.
+- "Select Shop" button in the maps modal now properly assigns the selected shop, aligning with the delivery to store concept by design.
+
+
 # Click & Collect for Craft Commerce 0.1.0 - 2024-10-25
 
 > {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.

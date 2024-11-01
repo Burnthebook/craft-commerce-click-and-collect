@@ -125,6 +125,7 @@ class CollectionPointService extends Component
             $record->postcode = $model->postcode;
             $record->latitude = $model->latitude;
             $record->longitude = $model->longitude;
+            $record->gracePeriodHours = $model->gracePeriodHours;
             $record->craft_address_id = $model->craft_address_id;
 
             return $record->save(false);
