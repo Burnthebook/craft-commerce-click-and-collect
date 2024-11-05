@@ -142,8 +142,9 @@
 
                             <div class="delivery__collection-option-form hide">
                                 {# Address Inputs (disabled by default) #}
-                                <input type="hidden" name="shippingAddress[firstName]" value="Collection Point" disabled>
-                                <input type="hidden" name="shippingAddress[lastName]" value="${point.name}" disabled>
+                                <input type="hidden" name="shippingAddress[titleName]" value="-" disabled>
+                                <input type="hidden" name="shippingAddress[firstName]" value="${point.name}" disabled>
+                                <input type="hidden" name="shippingAddress[lastName]" value="-" disabled>
                                 <input type="hidden" name="shippingAddress[addressLine1]" value="${address.addressLine1}" disabled>
                                 <input type="hidden" name="shippingAddress[addressLine2]" value="${address.addressLine2}" disabled>
                                 <input type="hidden" name="shippingAddress[locality]" value="${address.locality}" disabled>

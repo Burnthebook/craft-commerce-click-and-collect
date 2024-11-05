@@ -1,5 +1,16 @@
 # Release notes for Click & Collect for Craft Commerce
 
+# Click & Collect for Craft Commerce 0.1.3 - 2024-11-05
+
+
+> {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
+
+### Fixes
+
+- Adds github actions workflow.
+- Updates front end template to clarify shipping address is a shipping point in the CraftCMS Admin Order Screen
+- Updates README.
+
 # Click & Collect for Craft Commerce 0.1.2 - 2024-11-05
 
 > {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
