@@ -12,13 +12,15 @@
 #}
 
 <div class="delivery__form delivery__collection-form-outer" id="collection-form">
-    <h3 style="margin-bottom: 14px;">Find a collection point</h3>
+    <h3 class="delivery__collection-form-title" style="margin-bottom: 14px;">
+        Find a collection point
+    </h3>
 
     <form method="post" class="delivery__collection-form" id="find-collection-points">
         {# Postcode or Shop Name #}
         <label for="postcode" class="delivery__label">Enter a postcode, town, or shop name</label>
         <input type="text" id="postcode" placeholder="Postcode"/>
-        <button type="submit" class="hide-for-large" id="search-button">Search</button>
+        <button type="submit" id="search-button">Search</button>
     </form>
 
     {# Main form for submitting the selected collection point #}
@@ -75,9 +77,18 @@
         if (collectionPoints instanceof Array) {
             // clear any previous errors
             document.getElementById('collection-points-error-container').innerHTML = '';
+    
+            const searchContainer = document.querySelector('.delivery__collection-form');
+            searchContainer.classList.add('hide'); // Hide the form
 
+            const searchContainerTitle = document.querySelector('.delivery__collection-form-title');
+            searchContainerTitle.textContent = `Collection Points close to ${postcode}`;
+
+            // const searchContainerTitle = document.querySelector('.delivery__collection-form-title');
+            // searchContainerTitle.classList.add('hide'); // Hide the form
+            
+            // html =`<h3 id="collection-points-container-title">Collection Points close to &quot;${postcode}&quot;</h3>`;
             html = `
-                <h3>Your results for &quot;${postcode}&quot;</h3>
                 <div class="delivery__collection-options">
             `;
             collectionPoints.forEach(point => {
@@ -156,15 +167,19 @@
                                     <div>
                                         <label for="giftOption_${point.id}" class="gift-wrap__label custom-checkbox" style="text-align: left">
                                             <input type="hidden" name="fields[giftOption]" value="0" disabled>
-                                            <input type="checkbox" id="giftOption_${point.id}" name="fields[giftOption]" value="1" class="custom-checkbox-input" checked disabled>
+                                            <input type="checkbox" id="giftOption_${point.id}" name="fields[giftOption]" value="0" class="custom-checkbox-input" onclick="toggleGiftMessage(${point.id})">
                                             <span class="custom-checkbox-box"></span>
                                             Yes, this order is a gift (Prices will not be shown on the delivery note)
                                         </label>
                                     </div>
                                 </div>
-                                <label for="giftMessage_${point.id}" class="delivery__label">Add a gift message (optional)</label>
-                                <textarea name="fields[giftMessage]" id="giftMessage_${point.id}" style="background: transparent; margin-bottom: 12px; border-radius: 4px;" rows="2" disabled></textarea>
-                                <p class="delivery__gift-abstract">This message will appear on the delivery note</p>
+
+                                <!-- Gift message block (hidden by default) -->
+                                <div id="giftMessageBlock_${point.id}" style="display: none;">
+                                    <label for="giftMessage_${point.id}" class="delivery__label">Add a gift message (optional)</label>
+                                    <textarea name="fields[giftMessage]" id="giftMessage_${point.id}" style="background: transparent; margin-bottom: 12px; border-radius: 4px;" rows="2"></textarea>
+                                    <p class="delivery__gift-abstract">This message will appear on the delivery note</p>
+                                </div>
 
                                 {# Submit Button #}
                                 <button type="submit" class="delivery__button" style="max-width: 203px; padding: 0px 10px;">Continue to payment</button>
@@ -227,13 +242,16 @@
         // Find the option container and form with the matching point ID
         const optionContainer = document.querySelector(`.delivery__collection-option[data-point-id="${pointId}"]`);
         const formContainer = optionContainer.querySelector('.delivery__collection-option-form');
+        const searchContainerTitle = document.querySelector('.delivery__collection-form-title');
 
         // Check if the form is currently visible (i.e., shop is selected)
         const isShopSelected = !formContainer.classList.contains('hide');
 
         if (isShopSelected) {
+            
             // Deselect the shop: Hide the form and reset the UI to show all options
             formContainer.classList.add('hide'); // Hide the form
+            searchContainerTitle.textContent = 'Select a Collection Point';
 
             // Disable inputs in the deselected form
             const inputs = formContainer.querySelectorAll('input, select, textarea');
@@ -257,7 +275,8 @@
         } else {
             // Select the shop: Show the form and hide other options
             formContainer.classList.remove('hide'); // Unhide the form
-
+            searchContainerTitle.textContent = 'Selected Shop';
+            
             // Enable inputs in the selected form
             const inputs = formContainer.querySelectorAll('input, select, textarea');
             inputs.forEach(input => {
@@ -279,6 +298,17 @@
                     option.style.display = 'none'; // Hide other options
                 }
             });
+        }
+    }
+
+    function toggleGiftMessage(pointId) {
+        const giftMessageBlock = document.getElementById(`giftMessageBlock_${pointId}`);
+        const giftCheckbox = document.getElementById(`giftOption_${pointId}`);
+
+        if (giftCheckbox.checked) {
+            giftMessageBlock.style.display = 'block';
+        } else {
+            giftMessageBlock.style.display = 'none';
         }
     }
 

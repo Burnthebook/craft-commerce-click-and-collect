@@ -2,7 +2,7 @@
   "name": "burnthebook/craft-commerce-click-and-collect",
   "description": "A Craft Commerce plugin enabling Click & Collect functionality.",
   "type": "craft-plugin",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "keywords": [
     "craft",
     "cms",

@@ -1,5 +1,16 @@
 # Release notes for Click & Collect for Craft Commerce
 
+# Click & Collect for Craft Commerce 0.1.2 - 2024-11-05
+
+> {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
+
+### Fixes
+
+- Added a new button directly under the "Find a collection point" text field for easier access.
+- Modified UI so that when a user selects a collection point, the "Find a collection point" section is hidden, and the heading updates to "Selected shop" instead of "Collection Points close to...".
+- Updated the gift checkbox to be unchecked by default.
+- Hid the entire gift message section (label, textarea, and additional message) until the checkbox is clicked to improve initial clarity.
+
 # Click & Collect for Craft Commerce 0.1.1 - 2024-11-01
 
 > {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
