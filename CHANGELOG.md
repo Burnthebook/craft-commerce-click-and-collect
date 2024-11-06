@@ -1,5 +1,13 @@
 # Release notes for Click & Collect for Craft Commerce
 
+# Click & Collect for Craft Commerce 0.1.5 - 2024-11-06
+
+> {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
+
+### Enhancements
+- Adds Default Craft Commerce templates and overloads.
+- Updates readme with usage instructions.
+
 # Click & Collect for Craft Commerce 0.1.4 - 2024-11-06
 
 > {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
