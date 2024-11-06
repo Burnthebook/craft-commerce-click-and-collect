@@ -1,7 +1,13 @@
 # Release notes for Click & Collect for Craft Commerce
 
-# Click & Collect for Craft Commerce 0.1.3 - 2024-11-05
+# Click & Collect for Craft Commerce 0.1.4 - 2024-11-06
 
+> {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
+
+### Enhancements
+- Improved PostgreSQL Compatibility: Updated findNearby query to support PostgreSQL by using subqueries. PostgreSQL does not allow HAVING clauses to reference alias columns directly, which required adjusting the query structure to ensure compatibility.
+
+# Click & Collect for Craft Commerce 0.1.3 - 2024-11-05
 
 > {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
 
