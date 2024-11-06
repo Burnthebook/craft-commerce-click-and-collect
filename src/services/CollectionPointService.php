@@ -18,6 +18,8 @@ use DateTime;
 use DatePeriod;
 use DateInterval;
 use DateTimeZone;
+use craft\db\Query;
+use craft\helpers\Db;
 use yii\db\Expression;
 use craft\base\Component;
 use craft\elements\Address;
@@ -148,54 +150,81 @@ class CollectionPointService extends Component
     {
         // Earth radius in miles
         $earthRadius = 3959;
-
+    
         // Calculate bounding box (latitude and longitude deltas)
         $latDelta = $radius / $earthRadius * (180 / pi());
         $lonDelta = $radius / $earthRadius * (180 / pi()) / cos($latitude * pi() / 180);
-
+    
         $minLat = $latitude - $latDelta;
         $maxLat = $latitude + $latDelta;
         $minLon = $longitude - $lonDelta;
         $maxLon = $longitude + $lonDelta;
-
+    
+        // Detect the database driver type
+        $dbDriver = Craft::$app->getDb()->getDriverName();
+    
         // Haversine formula to calculate the distance
         $distanceFormula = "(:earthRadius * acos(
             cos(radians(:latitude)) * cos(radians([[latitude]])) * cos(radians([[longitude]]) - radians(:longitude)) +
             sin(radians(:latitude)) * sin(radians([[latitude]]))
         ))";
-
-        // Build the query
-        $query = CollectionPointRecord::find()
-            ->select([
-                '{{%collection_points}}.*',
-                new Expression("$distanceFormula AS distance")
-            ])
-            ->addParams([
-                ':latitude' => $latitude,
-                ':longitude' => $longitude,
-                ':earthRadius' => $earthRadius,
-            ])
-            ->where(['between', 'latitude', $minLat, $maxLat])
-            ->andWhere(['between', 'longitude', $minLon, $maxLon])
-            ->having(['<=', 'distance', $radius])
-            ->orderBy('distance ASC')
-            ->limit($limit);
-
+    
+        if ($dbDriver === 'pgsql') {
+            // PostgreSQL requires using a subquery for the distance calculation
+            $subquery = (new Query())
+                ->select([
+                    '{{%collection_points}}.*',
+                    new Expression("$distanceFormula AS distance")
+                ])
+                ->from('{{%collection_points}}')
+                ->where(['between', 'latitude', $minLat, $maxLat])
+                ->andWhere(['between', 'longitude', $minLon, $maxLon])
+                ->addParams([
+                    ':latitude' => $latitude,
+                    ':longitude' => $longitude,
+                    ':earthRadius' => $earthRadius,
+                ]);
+        
+            $query = (new Query())
+                ->from(['points' => $subquery])
+                ->where(['<=', 'distance', $radius])
+                ->orderBy('distance ASC')
+                ->limit($limit);
+        } else {
+            // MySQL query structure
+            $query = CollectionPointRecord::find()
+                ->select([
+                    '{{%collection_points}}.*',
+                    new Expression("$distanceFormula AS distance")
+                ])
+                ->addParams([
+                    ':latitude' => $latitude,
+                    ':longitude' => $longitude,
+                    ':earthRadius' => $earthRadius,
+                ])
+                ->where(['between', 'latitude', $minLat, $maxLat])
+                ->andWhere(['between', 'longitude', $minLon, $maxLon])
+                ->having(['<=', 'distance', $radius])
+                ->orderBy('distance ASC')
+                ->limit($limit);
+        }
+        
         $records = $query->all();
-
+    
         $sql = $query->createCommand()->getRawSql();
         \Craft::info("SQL Query: $sql", __METHOD__);
-
+    
         $collectionPoints = [];
         foreach ($records as $record) {
-            $attributes = $record->getAttributes();
-
-            // Get the calculated distance from the record
-            $attributes['distance'] = $record->getAttribute('distance');
-
+            // Check if $record is an array or an object
+            $attributes = is_array($record) ? $record : $record->getAttributes();
+    
+            // Get the calculated distance from the record (in case of array)
+            $attributes['distance'] = $attributes['distance'] ?? $record->getAttribute('distance');
+    
             $collectionPoints[] = new CollectionPoint($attributes);
         }
-
+    
         return $collectionPoints;
     }
 
