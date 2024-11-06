@@ -43,7 +43,7 @@ Within your Shipping Template (see note below), simply add the following line:
 
 The included template provides a postcode lookup form (using postcodes.io). This fetches configured collection points from Craft, sorting them by distance, and shows users the earliest available collection time on each collection point. It also integrates with Craft Commerce, adding the necessary hidden fields to ensure that the order makes sense in the admin.
 
-There may be some changes needed to integrate this into your design. For example, we only set the Shipping Address, not the Billing Address. If you want to collect the customers Billing Address you will need to add your own method collection. Please see Craft Commerce's default templates for an example: [https://github.com/craftcms/commerce/tree/5.x/example-templates/dist/shop](https://github.com/craftcms/commerce/tree/5.x/example-templates/dist/shop)
+There may be some changes needed to integrate this into your design. For example, we only set the Shipping Address, not the Billing Address. If you want to collect the customers Billing Address you will need to add your own method collection. Please see Craft Commerce's default templates for an example: [https://github.com/craftcms/commerce/tree/4.x/example-templates/dist/shop](https://github.com/craftcms/commerce/tree/4.x/example-templates/dist/shop)
 
 If you want to reference example templates, or are using Craft Commerce's default templates, you can simply copy the modified templates from the plugin into your project with the following command (run within a terminal):
 
