@@ -62,7 +62,7 @@ mkdir -p /templates/craft-commerce-click-and-collect/frontend
 cp -r vendor/burnthebook/craft-commerce-click-and-collect/templates/frontend/collection-points.twig ./templates/craft-commerce-click-and-collect/frontend/collection-points.twig
 ```
 
-You will now have a copy of the template that you can modify. The included template is using Tailwind CSS and should be easily modifiable.
+You will now have a copy of the template that you can modify. The included template is using Tailwind CSS and should be easily modifiable. _You do not need to modify the {% include %} tag you used above if you do this._
 
 ## Configuration
 
