@@ -68,7 +68,7 @@ Before the plugin will work effectively you need to create some Collection Point
 
 Once the plugin is installed, you will see a new menu item called "Click & Collect", if you click it you will see the list of Collection Points, as well a button to create a new Collection Point.
 
-<div style="display:flex;">
+<div style="display:flex;margin:10px 0;">
 <div style="width:50%;padding:10px;">
 <img src="https://raw.githubusercontent.com/Burnthebook/craft-commerce-click-and-collect/refs/heads/main/docs/img/collection-points-index.png">
 </div>
@@ -82,7 +82,7 @@ Once the plugin is installed, you will see a new menu item called "Click & Colle
 
 Once your Collection Point is created you can then create Opening Times for that Collection Point by clicking the Opening Times menu item.
 
-<div style="display:flex;">
+<div style="display:flex;margin:10px 0;">
 <div style="width:50%;padding:10px;">
 <img src="https://raw.githubusercontent.com/Burnthebook/craft-commerce-click-and-collect/refs/heads/main/docs/img/collection-times-index.png">
 </div>
