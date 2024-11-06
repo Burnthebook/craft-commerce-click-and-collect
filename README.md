@@ -121,7 +121,7 @@ Did you find a bug and know how to fix it? Please submit a Github Issue with det
 
 Do you intend to add a new feature? Please submit a Github Issue for discussion before submitting a Pull Request.
 
-Please format your code using php-cs-fixer for PSR-2 coding style before submitting a Pull Request.
+Please format your code using [php-cs-fixer](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer) for PSR-2 coding style before submitting a Pull Request.
 
 If you discover a security vulnerability, please send an email to Burnthebook at support@burnthebook.co.uk. All security vulnerabilities will be promptly addressed.
 
