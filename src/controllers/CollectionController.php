@@ -51,7 +51,7 @@ class CollectionController extends Controller
         $this->enableCsrfValidation = false; // Disable CSRF if necessary
 
         Craft::info('Guest request received for actionFindCollectionPoints', __METHOD__); // Debugging
-    
+
         // $this->requireAcceptsJson();
         $postcode = \Craft::$app->request->getRequiredParam('postcode');
 
