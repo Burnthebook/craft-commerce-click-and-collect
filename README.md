@@ -70,10 +70,10 @@ Once the plugin is installed, you will see a new menu item called "Click & Colle
 
 <div style="display:flex;">
 <div style="width:50%;padding:10px;">
-![Collection Points Index](./docs/img/collection-points-index.png)
+<img src="https://raw.githubusercontent.com/Burnthebook/craft-commerce-click-and-collect/refs/heads/main/docs/img/collection-points-index.png">
 </div>
 <div style="width:50%;padding:10px;">
-![New Collection Points](./docs/img/new-collection-point.png)
+<img src="https://raw.githubusercontent.com/Burnthebook/craft-commerce-click-and-collect/refs/heads/main/docs/img/new-collection-point.png">
 </div>
 </div>
 
@@ -84,10 +84,10 @@ Once your Collection Point is created you can then create Opening Times for that
 
 <div style="display:flex;">
 <div style="width:50%;padding:10px;">
-![Collection Points Index](./docs/img/collection-times-index.png)
+<img src="https://raw.githubusercontent.com/Burnthebook/craft-commerce-click-and-collect/refs/heads/main/docs/img/collection-times-index.png">
 </div>
 <div style="width:50%;padding:10px;">
-![New Collection Points](./docs/img/new-collection-time.png)
+<img src="https://raw.githubusercontent.com/Burnthebook/craft-commerce-click-and-collect/refs/heads/main/docs/img/new-collection-time.png">
 </div>
 </div>
 
