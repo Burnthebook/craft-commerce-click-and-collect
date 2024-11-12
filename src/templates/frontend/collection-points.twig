@@ -207,9 +207,15 @@
                                 <div class="space-y-1">
                                     ${point.openingHours.map(hour => `<p>${hour}</p>`).join('')}
                                 </div>
+                            `
+                firstCollectionTime ? 
+                html += `
                                 <a class="mt-4 px-4 py-2 bg-blue-600 text-white text-center rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 cursor-pointer js-select-shop-link" data-clickcollect-shopselect="point_${point.id}">
                                     Select Shop
                                 </a>
+                ` : '';
+
+                html += `
                             </div>
                         </div>
                     </div>
