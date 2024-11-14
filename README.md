@@ -2,6 +2,9 @@
 
 Click & Collect for Craft Commerce adds drop in Click and Collect functionality to Craft Commerce.
 
+![click-and-collect](https://github.com/user-attachments/assets/e9348a9a-00da-494c-b08c-54a9196095c4)
+
+
 **Note**: _The license fee for this plugin is $99 via the [Craft Plugin Store](https://plugins.craftcms.com/developer/burnthebook?craft4)._
 
 ## Requirements
