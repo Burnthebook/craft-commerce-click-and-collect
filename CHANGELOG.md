@@ -1,5 +1,11 @@
 # Release notes for Click & Collect for Craft Commerce
 
+# Click & Collect for Craft Commerce 1.0.0 - 2024-11-14
+
+Initial Release to Craft Store
+
+- Adds logo to plugin.
+
 # Click & Collect for Craft Commerce 0.1.5 - 2024-11-06
 
 > {note} This plugin is still in very early stages and while it fully works now there are doubtless bugs.
