@@ -101,7 +101,7 @@
 
                 if (firstCollectionTime) {
                     const availableTime = new Date(firstCollectionTime);
-                    timeString = availableTime.toLocaleTimeString([], { hour: 'numeric', hour12: true }).replace(' ', '');
+                    timeString = availableTime.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true }).replace(' ', '');
                     const dayOfWeek = availableTime.toLocaleDateString([], { weekday: 'long' });
                     const day = availableTime.getDate();
                     const month = availableTime.toLocaleDateString([], { month: 'long' });

@@ -1,5 +1,12 @@
 # Release notes for Click & Collect for Craft Commerce
 
+# Click & Collect for Craft Commerce 1.0.1 - 2024-11-20
+
+Bug Fixes & Functionality Improvements
+
+- Fixed: Updated getNextAvailableCollectionTime to correctly account for business grace period and opening times.
+- Improvement: Show exact time for collection - no longer removes the minutes from the time (e.g. "rounding").
+
 # Click & Collect for Craft Commerce 1.0.0 - 2024-11-14
 
 Initial Release to Craft Store
