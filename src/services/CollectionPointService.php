@@ -236,35 +236,146 @@ class CollectionPointService extends Component
     */
     public function getNextAvailableCollectionTime($collectionPointId)
     {
-        // Get collection point.
+        // This function is complex. Enable logging here to debug it.
+        $enableLogging = false;
+    
         $collectionPoint = $this->getCollectionPointById($collectionPointId);
         $collectionTimes = $collectionPoint->getCollectionTimes();
-        $timezone = Craft::$app->getTimeZone();
-
-        // Get current time.
-        $dateTime = new DateTime('now', new DateTimeZone($timezone));
-
-        // Get grace period for collection point. (Default 18h if not set)
-        $gracePeriod = $collectionPoint->gracePeriodHours ?? 18;
-
-        // Add grace period (hours) to current time.
-        $desiredTime = $dateTime->add(new DateInterval("PT{$gracePeriod}H"))->format("d-m-Y H:i");
-        $desiredTimeDt = new DateTime($desiredTime, new DateTimeZone($timezone));
-
-        // Get the days
-        $days = $this->getOpeningHours($collectionTimes);
-
-        // Loop through collection times again to do datetime comparsion with opening hours array
-        foreach ($collectionTimes as $collectionTime) {
-            // If the collection time day matches the desired times day
-            if ($collectionTime->day == strtolower($desiredTimeDt->format('D'))) {
-                $closestTime = $this->getClosestTime($desiredTimeDt, $days[$collectionTime->day]);
-                return $closestTime;
+    
+        $currentDateTime = new DateTime();
+        $remainingGraceHours = $collectionPoint->gracePeriodHours ?? 8;
+    
+        // Ensure proper timezone
+        $currentDateTime->setTimezone(new \DateTimeZone('Europe/London'));
+    
+        // Prepare schedule as time-only components
+        $schedule = [];
+        foreach ($collectionTimes as $time) {
+            $schedule[$time->day] = [
+                'open' => (new DateTime())->setTime((int)$time->openingTime->format("H"), (int)$time->openingTime->format("i")),
+                'close' => (new DateTime())->setTime((int)$time->closingTime->format("H"), (int)$time->closingTime->format("i"))
+            ];
+        }
+    
+        $iterationLimit = 30; // Prevent infinite loops
+        $iterations = 0;
+    
+        $enableLogging ? Craft::info("Starting calculation for Collection Point ID: {$collectionPointId}", __METHOD__) : null;
+    
+        while ($remainingGraceHours > 0) {
+            $iterations++;
+    
+            // Log iteration details
+            $enableLogging ? Craft::info("Iteration: {$iterations}, Current DateTime: {$currentDateTime->format('Y-m-d H:i:s')}, Remaining Grace Hours: {$remainingGraceHours}", __METHOD__) : null;
+    
+            if ($iterations > $iterationLimit) {
+                $enableLogging ? Craft::error("Iteration limit exceeded for Collection Point ID: {$collectionPointId}. Current DateTime: {$currentDateTime->format('Y-m-d H:i:s')}, Remaining Grace Hours: {$remainingGraceHours}", __METHOD__) : null;
+                return false;
+            }
+    
+            $dayOfWeek = strtolower($currentDateTime->format("D"));
+    
+            if (isset($schedule[$dayOfWeek])) {
+                $openTime = clone $schedule[$dayOfWeek]['open'];
+                $closeTime = clone $schedule[$dayOfWeek]['close'];
+    
+                $openTime->setDate($currentDateTime->format("Y"), $currentDateTime->format("m"), $currentDateTime->format("d"));
+                $closeTime->setDate($currentDateTime->format("Y"), $currentDateTime->format("m"), $currentDateTime->format("d"));
+    
+                $enableLogging ? Craft::info("Checking day: {$dayOfWeek}, Open Time: {$openTime->format('Y-m-d H:i:s')}, Close Time: {$closeTime->format('Y-m-d H:i:s')}", __METHOD__) : null;
+    
+                // If current time is before opening, move to opening time
+                if ($currentDateTime < $openTime) {
+                    $enableLogging ? Craft::info("Current time is before opening. Moving to Open Time: {$openTime->format('Y-m-d H:i:s')}", __METHOD__) : null;
+                    $currentDateTime = $openTime;
+                }
+    
+                // Calculate available hours for today
+                if ($currentDateTime < $closeTime) {
+                    $availableHours = ($closeTime->getTimestamp() - $currentDateTime->getTimestamp()) / 3600;
+                    $enableLogging ? Craft::info("Available Hours Today: {$availableHours}", __METHOD__) : null;
+    
+                    if ($remainingGraceHours <= $availableHours) {
+                        // Split remaining hours into hours and minutes
+                        $wholeHours = floor($remainingGraceHours);
+                        $fractionalHours = $remainingGraceHours - $wholeHours;
+                        $minutes = round($fractionalHours * 60);
+    
+                        // Apply hours and minutes separately
+                        if ($wholeHours > 0) {
+                            $currentDateTime->modify("+$wholeHours hours");
+                        }
+                        if ($minutes > 0) {
+                            $currentDateTime->modify("+$minutes minutes");
+                        }
+    
+                        $enableLogging ? Craft::info("Grace period fits today. Next Available Time: {$currentDateTime->format('Y-m-d H:i:s')}", __METHOD__) : null;
+    
+                        // Validate the result
+                        if ($currentDateTime->format('Y') > 3000) {
+                            $enableLogging ? Craft::error("Invalid future date detected: {$currentDateTime->format('Y-m-d H:i:s')}", __METHOD__) : null;
+                            throw new \RuntimeException("Invalid future date returned.");
+                        }
+    
+                        return $currentDateTime;
+                    } else {
+                        // Use up all available hours today
+                        $remainingGraceHours -= $availableHours;
+                        $enableLogging ? Craft::info("Used up all hours today. Remaining Grace Hours: {$remainingGraceHours}", __METHOD__) : null;
+                    }
+                } else {
+                    $enableLogging ? Craft::info("Current time is past today's close time. Moving to the next day.", __METHOD__) : null;
+                }
+            } else {
+                $enableLogging ? Craft::info("No opening hours for {$dayOfWeek}. Skipping to next day.", __METHOD__) : null;
+            }
+    
+            // Move to the next day
+            $currentDateTime->modify('+1 day');
+            if (isset($schedule[strtolower($currentDateTime->format("D"))])) {
+                $nextOpenTime = $schedule[strtolower($currentDateTime->format("D"))]['open'];
+                $currentDateTime->setTime((int)$nextOpenTime->format("H"), (int)$nextOpenTime->format("i"));
+                $enableLogging ? Craft::info("Moving to next day's open time: {$currentDateTime->format('Y-m-d H:i:s')}", __METHOD__) : null;
+            } else {
+                $enableLogging ? Craft::info("No opening hours for {$currentDateTime->format('l')}. Skipping to next day.", __METHOD__) : null;
             }
         }
-
-        return null;
+    
+        $enableLogging ? Craft::info("Final Next Available Time: {$currentDateTime->format('Y-m-d H:i:s')}", __METHOD__) : null;
+        return $currentDateTime;
     }
+
+    // public function getNextAvailableCollectionTime($collectionPointId)
+    // {
+    //     // Get collection point.
+    //     $collectionPoint = $this->getCollectionPointById($collectionPointId);
+    //     $collectionTimes = $collectionPoint->getCollectionTimes();
+    //     $timezone = Craft::$app->getTimeZone();
+
+    //     // Get current time.
+    //     $dateTime = new DateTime('now', new DateTimeZone($timezone));
+
+    //     // Get grace period for collection point. (Default 18h if not set)
+    //     $gracePeriod = $collectionPoint->gracePeriodHours ?? 18;
+
+    //     // Add grace period (hours) to current time.
+    //     $desiredTime = $dateTime->add(new DateInterval("PT{$gracePeriod}H"))->format("d-m-Y H:i");
+    //     $desiredTimeDt = new DateTime($desiredTime, new DateTimeZone($timezone));
+
+    //     // Get the days
+    //     $days = $this->getOpeningHours($collectionTimes);
+
+    //     // Loop through collection times again to do datetime comparsion with opening hours array
+    //     foreach ($collectionTimes as $collectionTime) {
+    //         // If the collection time day matches the desired times day
+    //         if ($collectionTime->day == strtolower($desiredTimeDt->format('D'))) {
+    //             $closestTime = $this->getClosestTime($desiredTimeDt, $days[$collectionTime->day]);
+    //             return $closestTime;
+    //         }
+    //     }
+
+    //     return null;
+    // }
 
     /**
      * Returns an array of opening hours for each day of the week, based on the given collection times.

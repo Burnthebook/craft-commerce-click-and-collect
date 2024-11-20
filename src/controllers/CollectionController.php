@@ -103,6 +103,8 @@ class CollectionController extends Controller
                 $addressData = null;
             }
 
+            $nextAvailableCollectionTime = ClickAndCollect::$plugin->collectionPoints->getNextAvailableCollectionTime($point->id);
+
             return [
                 'id' => $point->id,
                 'name' => $point->name,
@@ -113,7 +115,7 @@ class CollectionController extends Controller
                 'distance' => $point->distance,
                 'craft_address_id' => $point->craft_address_id,
                 'craft_address' => $addressData,
-                'firstCollectionTime' => $point->firstCollectionTime ? $point->firstCollectionTime->format('c') : null,
+                'firstCollectionTime' => $nextAvailableCollectionTime ? $nextAvailableCollectionTime->format('c') : null,
                 'openingHours' => $openingTimes
             ];
         }, $collectionPoints);
