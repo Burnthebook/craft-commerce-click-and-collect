@@ -13,17 +13,23 @@
 
 namespace burnthebook\craftcommerceclickandcollect\shipping;
 
+use craft\commerce\elements\Order;
+use Illuminate\Support\Collection;
 use craft\commerce\base\ShippingRuleInterface;
 use craft\commerce\base\ShippingMethodInterface;
 use craft\commerce\base\ShippingMethod as BaseShippingMethod;
-use craft\commerce\elements\Order;
 
-class ClickAndCollectShippingMethod extends BaseShippingMethod implements ShippingMethodInterface
+class ClickAndCollectShippingMethod implements ShippingMethodInterface
 {
     /**
      * @var int|null ID
      */
     public ?int $id = null;
+
+    /**
+     * @var int|null Store ID
+     */
+    // public ?int $storeId = null;
 
     /**
      * @var string|null Name
@@ -39,6 +45,15 @@ class ClickAndCollectShippingMethod extends BaseShippingMethod implements Shippi
      * @var bool Enabled
      */
     public bool $enabled = true;
+
+    /**
+     * Returns the type of Shipping Method. This might be the name of the plugin or provider.
+     * The core shipping methods have type: `Custom`. This is shown in the control panel only.
+     */
+    public function getType(): string
+    {
+        return $this->name;
+    }
 
     /**
      * Returns the ID of the current object.
@@ -68,6 +83,15 @@ class ClickAndCollectShippingMethod extends BaseShippingMethod implements Shippi
     public function getHandle(): string
     {
         return $this->handle;
+    }
+
+    /**
+     * Returns the control panel URL to manage this method and its rules.
+     * An empty string will result in no link.
+     */
+    public function getCpEditUrl(): string
+    {
+        return '';
     }
 
     /**
@@ -120,4 +144,29 @@ class ClickAndCollectShippingMethod extends BaseShippingMethod implements Shippi
     {
         return [new ClickAndCollectShippingRule()];
     }
+
+    /**
+     * Returns an array of rules that meet the `ShippingRules` interface.
+     *
+     * @return Collection<ShippingRuleInterface> The array of ShippingRules
+     */
+    public function getShippingRules(): Collection
+    {
+        return new Collection([new ClickAndCollectShippingRule()]);
+    }
+
+
+    public function getPriceForOrder(Order $order): float
+    {
+        return 0;
+    }
+
+    /**
+     * The first matching shipping rule for this shipping method
+     */
+    public function getMatchingShippingRule(Order $order): ?ShippingRuleInterface
+    {
+        return new ClickAndCollectShippingRule();
+    }
+
 }

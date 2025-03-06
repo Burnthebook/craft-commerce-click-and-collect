@@ -2,7 +2,7 @@
   "name": "burnthebook/craft-commerce-click-and-collect",
   "description": "A Craft Commerce plugin enabling Click & Collect functionality.",
   "type": "craft-plugin",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "keywords": [
     "craft",
     "cms",
@@ -29,8 +29,8 @@
     "docs": "https://github.com/burnthebook/craft-commerce-click-and-collect/blob/main/README.md"
   },
   "require": {
-    "craftcms/cms": "^4.0",
-    "craftcms/commerce": "^4.6"
+    "craftcms/cms": "^5.0",
+    "craftcms/commerce": "^5.0"
   },
   "autoload": {
     "psr-4": {
