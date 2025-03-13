@@ -6,13 +6,14 @@ Click & Collect for Craft Commerce adds drop in Click and Collect functionality 
 
 ## Requirements
 
-This plugin requires Craft CMS 5.6.0 or later.
-This plugin requires Craft Commerce 5.3.4 or later.
-This plugin requires PHP 8.2 or later.
+- This plugin requires Craft CMS 5.6.0 or later.
+- This plugin requires Craft Commerce 5.3.4 or later.
+- This plugin requires PHP 8.2 or later.
 
 https://github.com/user-attachments/assets/5ef784b5-4f44-4ee2-b3fc-0513100a5c68
 
-> {note} Craft Commerce must be 5.3.4 or later due to [a bug in previous versions of Commerce 5 impacting registration of custom shipping methods.](https://github.com/craftcms/commerce/commit/b769a1d2541ba14dccd974d863a13e2b479a6ca8)
+> [!NOTE]  
+> Craft Commerce must be 5.3.4 or later due to [a bug in previous versions of Commerce 5 impacting registration of custom shipping methods.](https://github.com/craftcms/commerce/commit/b769a1d2541ba14dccd974d863a13e2b479a6ca8)
 
 ## Compatibility & Previous Versions
 
