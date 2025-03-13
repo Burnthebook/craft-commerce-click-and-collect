@@ -5,7 +5,6 @@ namespace burnthebook\craftcommerceclickandcollect\services;
 use Craft;
 use craft\base\Component;
 use craft\fields\PlainText;
-use craft\models\FieldGroup;
 use craft\commerce\elements\Order;
 use craft\models\FieldLayoutTab;
 use craft\models\FieldLayout;
@@ -14,51 +13,19 @@ use craft\fieldlayoutelements\CustomField;
 class OrderService extends Component
 {
     /**
-     * Creates fields for the "Click & Collect" group and tab in the order layout.
+     * Creates the necessary fields and adds them to the order layout.
      *
      * @return void
     */
     public function createFields()
     {
-        // Create or retrieve the group
-        $fieldGroup = $this->createGroup('Click & Collect');
-
         // Ensure the "Click & Collect" tab exists in the order layout
         $clickAndCollectTab = $this->createTab('Click & Collect', Order::class);
 
-        // Create fields
-        $this->createField('mobileNumber', 'Mobile Number', 'Customer mobile number for contact.', $fieldGroup, $clickAndCollectTab);
-        $this->createField('collectionPoint', 'Collection Point', 'Customer collection point.', $fieldGroup, $clickAndCollectTab);
-        $this->createField('collectionTime', 'Collection Time', 'Customer collection time.', $fieldGroup, $clickAndCollectTab);
-    }
-
-    /**
-     * Creates a new field group with the given name, or returns an existing group with the same name.
-     *
-     * @param string $groupName The name of the field group to create.
-     * @return FieldGroup|false The newly created field group, or false if there was an error.
-    */
-    private function createGroup($groupName)
-    {
-        $fieldsService = Craft::$app->getFields();
-        $allGroups = $fieldsService->getAllGroups();
-
-        // Search for the group by name
-        foreach ($allGroups as $group) {
-            if ($group->name === $groupName) {
-                return $group;
-            }
-        }
-
-        // Create the group if it doesn't exist
-        $fieldGroup = new FieldGroup();
-        $fieldGroup->name = $groupName;
-        if (!$fieldsService->saveGroup($fieldGroup)) {
-            Craft::error('Could not save the field group. Errors: ' . print_r($fieldGroup->getErrors(), true), __METHOD__);
-            return false;
-        }
-
-        return $fieldGroup;
+        // Create fields (NO GROUPS REQUIRED)
+        $this->createField('mobileNumber', 'Mobile Number', 'Customer mobile number for contact.', $clickAndCollectTab);
+        $this->createField('collectionPoint', 'Collection Point', 'Customer collection point.', $clickAndCollectTab);
+        $this->createField('collectionTime', 'Collection Time', 'Customer collection time.', $clickAndCollectTab);
     }
 
     /**
@@ -100,16 +67,15 @@ class OrderService extends Component
     }
 
     /**
-     * Creates a new field with the given handle suffix, name, instructions, field group, and tab.
+     * Creates a new field and assigns it to a tab.
      *
      * @param string $handleSuffix The suffix to use for the field handle.
      * @param string $name The name of the field.
      * @param string $instructions The instructions for the field.
-     * @param FieldGroup $fieldGroup The field group to add the field to.
-     * @param Tab $tab The tab to add the field to.
+     * @param FieldLayoutTab $tab The tab to add the field to.
      * @return bool Whether the field was successfully created and added to the tab.
     */
-    private function createField($handleSuffix, $name, $instructions, $fieldGroup, $tab)
+    private function createField($handleSuffix, $name, $instructions, $tab)
     {
         $fieldsService = Craft::$app->getFields();
 
@@ -120,7 +86,6 @@ class OrderService extends Component
         $field = $fieldsService->getFieldByHandle($fieldHandle);
         if (!$field) {
             $field = new PlainText([
-                'groupId' => $fieldGroup->id,
                 'name' => $name,
                 'handle' => $fieldHandle,
                 'instructions' => $instructions,
@@ -133,6 +98,7 @@ class OrderService extends Component
             }
         }
 
+        // Add the field to the tab
         $this->addFieldToTab($field, $tab, Order::class);
     }
 
@@ -140,7 +106,7 @@ class OrderService extends Component
      * Adds a field to a tab in a field layout for a specific element type.
      *
      * @param Field $field The field to be added.
-     * @param Tab $tab The tab in the field layout to add the field to.
+     * @param FieldLayoutTab $tab The tab in the field layout to add the field to.
      * @param string $elementType The type of element the field layout is for.
      * @return bool Whether the field was successfully added to the tab.
     */
