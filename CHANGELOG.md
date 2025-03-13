@@ -2,7 +2,9 @@
 
 # Click & Collect for Craft Commerce 2.0.0 - 2025-03-05
 
-Adds Craft CMS 5.x Support
+Adds Craft CMS 5.x and Commerce 5.x Support
+
+OrderService changes:
 
 | Deprecation                           | Reason                                                 |
 | ------------------------------------- | ------------------------------------------------------ |
@@ -11,6 +13,7 @@ Adds Craft CMS 5.x Support
 | OrderService::createTab() Updated     | Tabs are still part of Field Layouts so they are kept. |
 | OrderService::addFieldToTab() Updated | This has been adjusted to work without Field Groups.   |
 
+ClickAndCollectShippingRule updated to use `craft\commerce\models\ShippingRule`. Stricter type hints implemented.
 
 # Click & Collect for Craft Commerce 1.0.1 - 2024-11-20
 
