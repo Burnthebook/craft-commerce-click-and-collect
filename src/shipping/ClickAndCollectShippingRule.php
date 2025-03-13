@@ -13,7 +13,7 @@
 
 namespace burnthebook\craftcommerceclickandcollect\shipping;
 
-use craft\commerce\base\Model as BaseShippingRule;
+use craft\commerce\models\ShippingRule as BaseShippingRule;
 use craft\commerce\base\ShippingRuleInterface;
 use craft\commerce\elements\Order;
 
@@ -43,9 +43,9 @@ class ClickAndCollectShippingRule extends BaseShippingRule implements ShippingRu
     /**
      * Returns the options for this object.
      *
-     * @return mixed The attributes for this object.
+     * @return array The attributes for this object.
      */
-    public function getOptions(): mixed
+    public function getOptions(): array
     {
         return $this->getAttributes();
     }
@@ -56,7 +56,7 @@ class ClickAndCollectShippingRule extends BaseShippingRule implements ShippingRu
      * @param string $shippingCategory The shipping category to get the percentage rate for.
      * @return float The percentage rate for the given shipping category.
      */
-    public function getPercentageRate($shippingCategory): float
+    public function getPercentageRate(?int $shippingCategoryId = null): float
     {
         return 0;
     }
@@ -67,7 +67,7 @@ class ClickAndCollectShippingRule extends BaseShippingRule implements ShippingRu
      * @param string $shippingCategory The category of the item being shipped.
      * @return float The per item shipping rate.
      */
-    public function getPerItemRate($shippingCategory): float
+    public function getPerItemRate(?int $shippingCategoryId = null): float
     {
         return 0;
     }
@@ -78,7 +78,7 @@ class ClickAndCollectShippingRule extends BaseShippingRule implements ShippingRu
      * @param string $shippingCategory The category of the shipment.
      * @return float The weight rate for the given shipping category.
      */
-    public function getWeightRate($shippingCategory): float
+    public function getWeightRate(?int $shippingCategoryId = null): float
     {
         return 0;
     }
