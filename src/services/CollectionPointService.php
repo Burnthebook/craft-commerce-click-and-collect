@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Click and Collect plugin for Craft CMS 4.x
+ * Click and Collect plugin for Craft CMS 5.x
  *
  * Add drop in Click and Collect functionality to Craft Commerce.
  *
