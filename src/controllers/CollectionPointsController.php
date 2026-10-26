@@ -48,6 +48,7 @@ class CollectionPointsController extends Controller
 
         return $this->renderTemplate('craft-commerce-click-and-collect/cp/collection-points/index', [
             'collectionPoints' => $collectionPoints,
+            'showPurchaseLicense' => Craft::$app->getPlugins()->hasIssues(ClickAndCollect::$plugin->handle),
         ]);
     }
 

@@ -54,14 +54,16 @@
 {% block footer %}
     <hr>
     <ul style="margin:0;display:flex;align-items:center;justify-content:center;">
-        <li>
-            <a href="https://plugins.craftcms.com/craft-commerce-click-and-collect?craft5" style="margin: 10px;">
-                Purchase License
-            </a>
-        </li>
-        <li>
-            &middot;
-        </li>
+        {% if showPurchaseLicense %}
+            <li>
+                <a href="https://plugins.craftcms.com/craft-commerce-click-and-collect?craft5" style="margin: 10px;">
+                    Purchase License
+                </a>
+            </li>
+            <li>
+                &middot;
+            </li>
+        {% endif %}
         <li>
             <a href="https://github.com/Burnthebook/craft-commerce-click-and-collect/issues" style="margin: 10px;">
                 Support
