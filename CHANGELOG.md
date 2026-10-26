@@ -1,5 +1,11 @@
 # Release notes for Click & Collect for Craft Commerce
 
+# Click & Collect for Craft Commerce 2.0.1 - 2026-10-26
+
+Fixes issue with `allowAdminChanges` being false. #2
+Fixes issue where Click & Collect Shipping Method could be duplicated. #3
+Fixes blank links in template files.
+
 # Click & Collect for Craft Commerce 2.0.0 - 2025-03-05
 
 Adds Craft CMS 5.x and Commerce 5.x Support
