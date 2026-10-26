@@ -58,7 +58,7 @@ class ClickAndCollect extends Plugin
                 $shippingMethod = new ClickAndCollectShippingMethod();
                 \Craft::info('Adding shipping method: ' . get_class($shippingMethod), __METHOD__);
                 \Craft::info('Before adding, shippingMethods: ' . print_r($event->shippingMethods, true), __METHOD__);
-                $event->shippingMethods[] = $shippingMethod;
+                $event->shippingMethods = $event->shippingMethods->concat([$shippingMethod]);
                 \Craft::info('After adding, shippingMethods: ' . print_r($event->shippingMethods, true), __METHOD__);
             }
         );
