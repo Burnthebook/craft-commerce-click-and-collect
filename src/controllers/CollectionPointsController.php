@@ -36,7 +36,7 @@ class CollectionPointsController extends Controller
      */
     public function actionIndex(): Response
     {
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionPoints');
 
         // Debugging
         if (ClickAndCollect::$plugin->collectionPoints === null) {
@@ -59,7 +59,7 @@ class CollectionPointsController extends Controller
      */
     public function actionEdit(int $collectionPointId = null): Response
     {
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionPoints');
 
         if ($collectionPointId) {
             $collectionPoint = ClickAndCollect::$plugin->collectionPoints->getCollectionPointById($collectionPointId);
@@ -81,7 +81,7 @@ class CollectionPointsController extends Controller
     public function actionSave(): Response
     {
         $this->requirePostRequest();
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionPoints');
 
         $request = \Craft::$app->getRequest();
         $collectionPointId = $request->getBodyParam('collectionPointId');
@@ -167,7 +167,7 @@ class CollectionPointsController extends Controller
      */
     public function actionDelete(int $collectionPointId): Response
     {
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionPoints');
 
         if (ClickAndCollect::$plugin->collectionPoints->deleteCollectionPointById($collectionPointId)) {
             \Craft::$app->getSession()->setNotice('Collection Point deleted.');

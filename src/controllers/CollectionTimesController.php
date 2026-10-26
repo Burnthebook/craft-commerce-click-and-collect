@@ -34,7 +34,7 @@ class CollectionTimesController extends Controller
      */
     public function actionIndex(): Response
     {
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionTimes');
 
         $collectionTimes = ClickAndCollect::$plugin->collectionTimes->getAllCollectionTimes();
 
@@ -51,7 +51,7 @@ class CollectionTimesController extends Controller
      */
     public function actionEdit(int $collectionTimeId = null): Response
     {
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionTimes');
 
         if ($collectionTimeId) {
             $collectionTime = ClickAndCollect::$plugin->collectionTimes->getCollectionTimeById($collectionTimeId);
@@ -76,7 +76,7 @@ class CollectionTimesController extends Controller
     public function actionSave(): Response
     {
         $this->requirePostRequest();
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionTimes');
 
         $request = \Craft::$app->getRequest();
         $collectionTimeId = $request->getBodyParam('collectionTimeId');
@@ -114,7 +114,7 @@ class CollectionTimesController extends Controller
      */
     public function actionDelete(int $collectionTimeId): Response
     {
-        $this->requireAdmin();
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionTimes');
 
         if (ClickAndCollect::$plugin->collectionTimes->deleteCollectionTimeById($collectionTimeId)) {
             \Craft::$app->getSession()->setNotice('Collection Time deleted.');

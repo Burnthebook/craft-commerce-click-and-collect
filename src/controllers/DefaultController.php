@@ -34,8 +34,12 @@ class DefaultController extends Controller
      */
     public function actionIndex(): Response
     {
-        $this->requireAdmin();
+        if (\Craft::$app->getUser()->checkPermission('craft-commerce-click-and-collect:manageCollectionPoints')) {
+            return $this->redirect(UrlHelper::cpUrl('craft-commerce-click-and-collect/collection-points'));
+        }
 
-        return $this->renderTemplate('craft-commerce-click-and-collect/cp/index');
+        $this->requirePermission('craft-commerce-click-and-collect:manageCollectionTimes');
+
+        return $this->redirect(UrlHelper::cpUrl('craft-commerce-click-and-collect/collection-times'));
     }
 }
